@@ -14,6 +14,25 @@ import android.util.Log;
  * Created by beekill on 7/27/16.
  */
 public class TextSMSCommunication extends DeviceCommunication {
+    static public class TextSMSReceiverHandler extends BroadcastReceiver
+    {
+        TextSMSReceiverHandler() {
+
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // extract sms message
+            Bundle bundle = intent.getExtras();
+            String message = getMessage(bundle);
+
+            // start the service to handle sms message
+            Intent serviceIntent = new Intent(context, MatDienService.class);
+            serviceIntent.putExtra("message", message);
+            context.startService(serviceIntent);
+        }
+    }
+
     private BroadcastReceiver smsReceiver;
 
     TextSMSCommunication() {
@@ -21,30 +40,36 @@ public class TextSMSCommunication extends DeviceCommunication {
         smsReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i("MatDienApp", "on sms receive called");
                 Bundle bundle = intent.getExtras();
 
-                SmsMessage smsMessage = null;
-
-                String message = "";
-
-                if (bundle != null) {
-                    // retrieve the sms messages received
-                    Object[] pdus = (Object[]) bundle.get("pdus");
-
-                    for (int i = 0; i < pdus.length; ++i) {
-                        smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
-
-                        message += "SMS from " + smsMessage.getOriginatingAddress() + ": ";
-                        message += smsMessage.getMessageBody();
-                        message += "\n";
-                    }
-                }
+                String message = getMessage(bundle);
 
                 // passing to the handler
                 receiveIncomingData(message);
             }
         };
+    }
+
+    static private String getMessage(Bundle bundle)
+    {
+        SmsMessage smsMessage;
+
+        String message = "";
+
+        if (bundle != null) {
+            // retrieve the sms messages received
+            Object[] pdus = (Object[]) bundle.get("pdus");
+
+            for (int i = 0; i < pdus.length; ++i) {
+                smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
+
+                message += "SMS from " + smsMessage.getOriginatingAddress() + ": ";
+                message += smsMessage.getMessageBody();
+                message += "\n";
+            }
+        }
+
+        return message;
     }
 
     @Override
@@ -69,6 +94,5 @@ public class TextSMSCommunication extends DeviceCommunication {
 
         // register the data receiver to android system
         context.getApplicationContext().registerReceiver(smsReceiver, intentFilter);
-
     }
 }

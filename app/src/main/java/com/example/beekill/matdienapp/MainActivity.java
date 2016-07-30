@@ -59,10 +59,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        // starting MatDienService to listen to incoming sms message
-
-        MatDienService.MatDienBinder serviceBinder = null;
     }
 
     @Override
