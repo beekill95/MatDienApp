@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.util.Log;
 
 public class LogInActivity extends AppCompatActivity {
     private EditText usernameEditText;
@@ -90,6 +89,7 @@ public class LogInActivity extends AppCompatActivity {
             // check if the user can login
             if (storedPassword[0].equals(""))
                 // login with admin account
+                // the first time
                 return storedPassword[1].equals(password);
             else
                 // login with other account
