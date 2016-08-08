@@ -1,6 +1,5 @@
 package com.example.beekill.matdienapp;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -76,5 +75,10 @@ public class BinarySMSCommunication extends DeviceCommunication {
         intentFilter.addDataAuthority("*", String.valueOf(port));
 
         context.registerReceiver(smsReceiver, intentFilter);
+    }
+
+    @Override
+    public void unregisterDataReceiverToAndroid(Context context) {
+        context.unregisterReceiver(smsReceiver);
     }
 }

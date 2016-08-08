@@ -50,4 +50,9 @@ public abstract class DeviceCommunication {
     * Function to register the receiver to the android system dynamically
     * */
     public abstract void registerDataReceiverToAndroid(Context context);
+
+    /*
+    * Function to unregister the receiver to the android system dynamically
+    * */
+    public abstract void unregisterDataReceiverToAndroid(Context context);
 }

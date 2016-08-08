@@ -94,4 +94,9 @@ public class TextSMSCommunication extends DeviceCommunication {
         // register the data receiver to android system
         context.getApplicationContext().registerReceiver(smsReceiver, intentFilter);
     }
+
+    @Override
+    public void unregisterDataReceiverToAndroid(Context context) {
+        context.unregisterReceiver(smsReceiver);
+    }
 }
