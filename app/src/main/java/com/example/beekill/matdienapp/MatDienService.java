@@ -15,14 +15,11 @@ public class MatDienService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        android.os.Debug.waitForDebugger();
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         String message = intent.getStringExtra("message");
         Log.i("MatDienApp", "Service received message " + message);
-
-        //MessageHandler.handleInService(this, message);
     }
 }

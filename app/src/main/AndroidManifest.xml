@@ -23,7 +23,7 @@
         </service>
 
         <receiver
-            android:name=".TextSMSCommunication$TextSMSReceiverHandler"
+            android:name=".communication.TextSMSCommunication$TextSMSReceiverHandler"
             android:enabled="true"
             >
             <intent-filter android:priority="999">
