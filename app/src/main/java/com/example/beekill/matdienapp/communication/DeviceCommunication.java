@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp;
+package com.example.beekill.matdienapp.communication;
 
 import android.content.Context;
 

@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp;
+package com.example.beekill.matdienapp.communication;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
+
+import com.example.beekill.matdienapp.MatDienService;
 
 /**
  * Created by beekill on 7/27/16.
