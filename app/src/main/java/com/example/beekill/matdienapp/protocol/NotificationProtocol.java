@@ -4,5 +4,5 @@ package com.example.beekill.matdienapp.protocol;
  * Created by beekill on 8/8/16.
  */
 public interface NotificationProtocol {
-    SubscriptionType[] getNotifiedTypes(String notificationMessage);
+    String[] getNotifiedTypes(String notificationMessage);
 }

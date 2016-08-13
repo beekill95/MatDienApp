@@ -31,6 +31,4 @@ public class Response {
     private boolean result;
     private String description;
     private String[] list;
-
-
 }
