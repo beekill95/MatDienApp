@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp;
+package com.example.beekill.matdienapp.hash;
 
 /**
  * Created by beekill on 7/21/16.

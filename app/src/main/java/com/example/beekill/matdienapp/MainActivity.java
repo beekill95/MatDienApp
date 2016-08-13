@@ -10,6 +10,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.view.View;
 
+import com.example.beekill.matdienapp.hash.Hashing;
+import com.example.beekill.matdienapp.hash.HashingPBKDF2;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

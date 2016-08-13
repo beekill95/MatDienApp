@@ -15,6 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.beekill.matdienapp.hash.Hashing;
+import com.example.beekill.matdienapp.hash.HashingPBKDF2;
+
 public class LogInActivity extends AppCompatActivity {
     private EditText usernameEditText;
     private EditText passwordEditText;
