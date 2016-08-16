@@ -39,6 +39,15 @@ public abstract class DeviceCommunication {
     }
 
     /*
+    * Function to remove the handler
+    * */
+    public void unregisterHandler(ReceivedDataHandler handler)
+    {
+        if (handler == this.handler)
+            this.handler = null;
+    }
+
+    /*
     * Function to call the handler
     * */
     protected void handleReceivedData(String data)

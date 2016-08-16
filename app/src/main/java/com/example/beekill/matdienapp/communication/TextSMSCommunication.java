@@ -36,7 +36,7 @@ public class TextSMSCommunication extends DeviceCommunication {
 
     private BroadcastReceiver smsReceiver;
 
-    TextSMSCommunication() {
+    public TextSMSCommunication() {
         // define our smsReceiver
         smsReceiver = new BroadcastReceiver() {
             @Override

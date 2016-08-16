@@ -10,18 +10,21 @@ import android.util.Log;
 import android.widget.Button;
 import android.view.View;
 
+import com.example.beekill.matdienapp.communication.TextSMSCommunication;
 import com.example.beekill.matdienapp.hash.Hashing;
 import com.example.beekill.matdienapp.hash.HashingPBKDF2;
+import com.example.beekill.matdienapp.communication.DeviceCommunication;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DeviceCommunication.ReceivedDataHandler{
     private static final String USER_LOGIN_FILENAME = "users_login_info";
     private static final String PREF_NAME = "MatDienApp";
     private SharedPreferences sharedPreferences;
+    private DeviceCommunication deviceCommunication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +65,21 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        // to communicate with devices
+        deviceCommunication = new TextSMSCommunication();
+        deviceCommunication.registerHandler(this);
+        deviceCommunication.registerDataReceiverToAndroid(this);
     }
 
     @Override
     protected void onDestroy() {
         // saving the users login information
         saveUserLoginInformation();
+
+        // remove device communicate with devices
+        deviceCommunication.unregisterHandler(this);
+        deviceCommunication.unregisterDataReceiverToAndroid(this);
 
         super.onDestroy();
     }
@@ -166,5 +178,10 @@ public class MainActivity extends AppCompatActivity {
 
         // finish this activity
         finish();
+    }
+
+    @Override
+    public void handle(String data) {
+        Log.i(PREF_NAME, "Receive in activity " + data);
     }
 }
