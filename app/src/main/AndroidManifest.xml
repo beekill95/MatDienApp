@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.beekill.matdienapp">
 
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,23 +18,44 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".LogInActivity" />
 
-        <service
-            android:name=".MatDienService" >
-        </service>
+        <service android:name=".MatDienService" />
 
         <receiver
             android:name=".communication.TextSMSCommunication$TextSMSReceiverHandler"
-            android:enabled="true"
-            >
+            android:enabled="true">
             <intent-filter android:priority="999">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".activities.adminactivity.AdminActionListActivity"
+            android:label="@string/title_adminaction_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.adminactivity.AdminActionDetailActivity"
+            android:label="@string/title_adminaction_detail"
+            android:parentActivityName=".activities.adminactivity.AdminActionListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.beekill.matdienapp.activities.adminactivity.AdminActionListActivity" />
+        </activity>
+        <activity
+            android:name=".activities.subscriberactivity.SubscriberActionListActivity"
+            android:label="@string/title_subscriberaction_list"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".activities.subscriberactivity.SubscriberActionDetailActivity"
+            android:label="@string/title_subscriberaction_detail"
+            android:parentActivityName=".activities.subscriberactivity.SubscriberActionListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.beekill.matdienapp.activities.subscriberactivity.SubscriberActionListActivity" />
+        </activity>
     </application>
-    
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
 </manifest>

@@ -78,8 +78,10 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         saveUserLoginInformation();
 
         // remove device communicate with devices
-        deviceCommunication.unregisterHandler(this);
-        deviceCommunication.unregisterDataReceiverToAndroid(this);
+        if (deviceCommunication != null) {
+            deviceCommunication.unregisterHandler(this);
+            deviceCommunication.unregisterDataReceiverToAndroid(this);
+        }
 
         super.onDestroy();
     }

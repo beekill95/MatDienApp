@@ -1,8 +1,9 @@
 package com.example.beekill.matdienapp;
 
-import org.junit.Test;
+import com.example.beekill.matdienapp.hash.Hashing;
+import com.example.beekill.matdienapp.hash.HashingPBKDF2;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.

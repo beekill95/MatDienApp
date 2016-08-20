@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.example.beekill.matdienapp.MatDienService;
 
+import java.util.ArrayList;
+
 /**
  * Created by beekill on 7/27/16.
  */
@@ -23,6 +25,11 @@ public class TextSMSCommunication extends DeviceCommunication {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            // check whether users started the app and added a device
+            if (devicePhoneNumbers == null)
+                return;
+
+            // if they do, processing the received messages
             // extract sms message
             Bundle bundle = intent.getExtras();
             String message = getMessage(bundle);
@@ -35,6 +42,7 @@ public class TextSMSCommunication extends DeviceCommunication {
     }
 
     private BroadcastReceiver smsReceiver;
+    private static ArrayList<String> devicePhoneNumbers = null;
 
     public TextSMSCommunication() {
         // define our smsReceiver
