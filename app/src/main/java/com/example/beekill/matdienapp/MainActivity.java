@@ -16,6 +16,7 @@ import com.example.beekill.matdienapp.hash.Hashing;
 import com.example.beekill.matdienapp.hash.HashingPBKDF2;
 import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.protocol.Protocol;
+import com.example.beekill.matdienapp.protocol.Response;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
     private Button addSubscriberButton;
     private EditText phoneEditText;
 
+    private static final String devicePhoneNumber = "6505551212";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
                 getApplicationContext()
         );
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("Test", "I am testing something here");
+        editor.putString("devicePhoneNumber", devicePhoneNumber);
         editor.commit();
         boolean isLogin = sharedPreferences.getBoolean("isLogin", false);
 
@@ -244,7 +247,10 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
     }
 
     @Override
-    public void handle(String data) {
+    public void handle(String data, String fromAddress) {
+        if (!fromAddress.equals(devicePhoneNumber))
+            return;
+
         Log.i(PREF_NAME, "Receive in activity " + data);
 
         if (isWaitingReponse) {
@@ -253,6 +259,10 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
             signOutButton.setEnabled(true);
             addSubscriberButton.setEnabled(true);
             phoneEditText.setEnabled(true);
+
+            // get result
+            Response response = protocol.getResponse(data);
+            Log.i(PREF_NAME, "result: " + response.getResult() + " desc: " + response.getDescription());
         }
     }
 }

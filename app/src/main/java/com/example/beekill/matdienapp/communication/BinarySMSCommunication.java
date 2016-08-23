@@ -48,16 +48,16 @@ public class BinarySMSCommunication extends DeviceCommunication {
                 }
 
                 // passing the received message to the handler
-                receiveIncomingData(message);
+                receiveIncomingData(message, "");
             }
         };
     }
 
     @Override
-    protected void receiveIncomingData(String data) {
+    protected void receiveIncomingData(String data, String fromAddress) {
         // sending the data to the handler to continue processing
         // the message
-        handleReceivedData(data);
+        handleReceivedData(data, fromAddress);
     }
 
     @Override

@@ -17,6 +17,8 @@ import java.util.ArrayList;
  * Created by beekill on 7/27/16.
  */
 public class TextSMSCommunication extends DeviceCommunication {
+
+
     static public class TextSMSReceiverHandler extends BroadcastReceiver
     {
         TextSMSReceiverHandler() {
@@ -28,11 +30,13 @@ public class TextSMSCommunication extends DeviceCommunication {
             // if they do, processing the received messages
             // extract sms message
             Bundle bundle = intent.getExtras();
-            String message = getMessage(bundle);
+            String[] message = getMessage(bundle);
 
             // start the service to handle sms message
             Intent serviceIntent = new Intent(context, MatDienService.class);
-            serviceIntent.putExtra("message", message);
+            serviceIntent.putExtra("message", message[MESSAGE_INDEX]);
+            serviceIntent.putExtra("fromAddress", message[ADDRESS_INDEX]);
+
             context.startService(serviceIntent);
         }
     }
@@ -46,30 +50,30 @@ public class TextSMSCommunication extends DeviceCommunication {
             public void onReceive(Context context, Intent intent) {
                 Bundle bundle = intent.getExtras();
 
-                String message = getMessage(bundle);
+                String[] message = getMessage(bundle);
 
                 // passing to the handler
-                receiveIncomingData(message);
+                receiveIncomingData(message[MESSAGE_INDEX], message[ADDRESS_INDEX]);
             }
         };
     }
 
-    static private String getMessage(Bundle bundle)
+    static private String[] getMessage(Bundle bundle)
     {
         SmsMessage smsMessage;
 
-        String message = "";
+        String[] message = new String[2];
 
         if (bundle != null) {
             // retrieve the sms messages received
             Object[] pdus = (Object[]) bundle.get("pdus");
+            message[MESSAGE_INDEX] = "";
 
             for (int i = 0; i < pdus.length; ++i) {
                 smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
 
-                message += "SMS from " + smsMessage.getOriginatingAddress() + ": ";
-                message += smsMessage.getMessageBody();
-                message += "\n";
+                message[ADDRESS_INDEX] = smsMessage.getOriginatingAddress();
+                message[MESSAGE_INDEX] += smsMessage.getMessageBody();
             }
         }
 
@@ -85,9 +89,9 @@ public class TextSMSCommunication extends DeviceCommunication {
     }
 
     @Override
-    protected void receiveIncomingData(String data) {
+    protected void receiveIncomingData(String data, String fromAddress) {
         // passing the data to the handler without additional processing
-        handleReceivedData(data);
+        handleReceivedData(data, fromAddress);
     }
 
     @Override

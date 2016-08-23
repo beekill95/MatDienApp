@@ -7,6 +7,22 @@ import org.json.*;
 public class Protocol
     implements AdminProtocol, SubscriberProtocol, NotificationProtocol, ResponseProtocol
 {
+    public enum NotificationStatus {
+        None("None"), Power("Power"), Camera("Camera"), Thief("Theif");
+
+        private String value;
+
+        private NotificationStatus(String value)
+        {
+            this.value = value;
+        }
+
+        public String getValue()
+        {
+            return value;
+        }
+    }
+
     @Override
     public String addSubscriberMessage(String adminPass, String subscriberPhoneNumber) {
         JSONObject message = new JSONObject();
@@ -106,23 +122,25 @@ public class Protocol
     }
 
     @Override
-    public String[] getNotifiedTypes(String notificationMessage) {
-        String[] values = null;
+    public Notification getNotification(String notificationMessage) {
+        Notification notification = null;
         try {
             JSONObject message = new JSONObject(notificationMessage);
 
-            if (message.has("vals")) {
-                JSONArray valueArray = message.getJSONArray("vals");
+            if (message.has("values")) {
+                JSONObject valuesObject = message.getJSONObject("values");
 
-                values = new String[valueArray.length()];
-                for (int i = 0; i < valueArray.length(); ++i)
-                    values[i] = valueArray.getString(i);
+                boolean cameraOn = valuesObject.getBoolean(NotificationStatus.Camera.getValue());
+                boolean powerOn = valuesObject.getBoolean(NotificationStatus.Power.getValue());
+                boolean haveTheif = valuesObject.getBoolean(NotificationStatus.Thief.getValue());
+
+                notification = new Notification(powerOn, cameraOn, haveTheif);
             }
         } catch(JSONException e) {
             e.printStackTrace();
         }
 
-        return values;
+        return notification;
     }
 
     @Override

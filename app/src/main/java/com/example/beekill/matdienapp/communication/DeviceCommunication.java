@@ -8,11 +8,14 @@ import android.content.Context;
  * Store all the functions needed to send send and handle incoming data
  */
 public abstract class DeviceCommunication {
+    public static final int MESSAGE_INDEX = 0;
+    public static final int ADDRESS_INDEX = 1;
+
     /*
     * The interface that a class will need to implement in order to handle the incoming data
     * */
     public interface ReceivedDataHandler {
-        void handle(String data);
+        void handle(String data, String fromAddress);
     }
 
     /*
@@ -22,7 +25,7 @@ public abstract class DeviceCommunication {
     * it will call the handleReceivedData function to process the received data
     * */
     public abstract void send(String data, String toAddress);
-    protected abstract void receiveIncomingData(String data);
+    protected abstract void receiveIncomingData(String data, String fromAddress);
 
     /*
     * Private member to store a reference to a class
@@ -50,9 +53,9 @@ public abstract class DeviceCommunication {
     /*
     * Function to call the handler
     * */
-    protected void handleReceivedData(String data)
+    protected void handleReceivedData(String data, String fromAddress)
     {
-        handler.handle(data);
+        handler.handle(data, fromAddress);
     }
 
     /*
