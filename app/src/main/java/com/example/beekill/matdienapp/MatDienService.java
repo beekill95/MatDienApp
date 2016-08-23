@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.example.beekill.matdienapp.protocol.Notification;
+import com.example.beekill.matdienapp.protocol.Protocol;
+
 /**
  * Created by beekill on 7/29/16.
  */
@@ -36,6 +39,15 @@ public class MatDienService extends IntentService {
 
             // get notification from the message
             // but first, we have to check whether it is a notification
+            Protocol protocol = new Protocol();
+            Protocol.DeviceResponseMessageType messageType = protocol.getDeviceResponseType(message);
+
+            if (messageType == Protocol.DeviceResponseMessageType.Notification) {
+                // only process notification
+                Notification notification = protocol.getNotification(message);
+
+                // pass the notification to notification activity
+            }
         }
     }
 }

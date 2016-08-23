@@ -5,4 +5,5 @@ package com.example.beekill.matdienapp.protocol;
  */
 public interface NotificationProtocol {
     Notification getNotification(String notificationMessage);
+    String notificationMessage(String password);
 }

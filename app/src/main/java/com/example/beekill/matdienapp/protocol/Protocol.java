@@ -1,4 +1,6 @@
 package com.example.beekill.matdienapp.protocol;
+import android.bluetooth.BluetoothClass;
+
 import org.json.*;
 
 /**
@@ -7,20 +9,27 @@ import org.json.*;
 public class Protocol
     implements AdminProtocol, SubscriberProtocol, NotificationProtocol, ResponseProtocol
 {
-    public enum NotificationStatus {
-        None("None"), Power("Power"), Camera("Camera"), Thief("Theif");
+    public enum DeviceResponseMessageType {
+        Unknown, Response, Notification
+    }
 
-        private String value;
+    public DeviceResponseMessageType getDeviceResponseType(String messageString)
+    {
+        DeviceResponseMessageType type = null;
+        try {
+            JSONObject message = new JSONObject(messageString);
 
-        private NotificationStatus(String value)
-        {
-            this.value = value;
+            if (message.has("result"))
+                type = DeviceResponseMessageType.Response;
+            else if (message.has("values"))
+                type = DeviceResponseMessageType.Notification;
+            else
+                type = DeviceResponseMessageType.Unknown;
+        } catch(JSONException e) {
+            e.printStackTrace();
         }
 
-        public String getValue()
-        {
-            return value;
-        }
+        return type;
     }
 
     @Override
@@ -130,9 +139,9 @@ public class Protocol
             if (message.has("values")) {
                 JSONObject valuesObject = message.getJSONObject("values");
 
-                boolean cameraOn = valuesObject.getBoolean(NotificationStatus.Camera.getValue());
-                boolean powerOn = valuesObject.getBoolean(NotificationStatus.Power.getValue());
-                boolean haveTheif = valuesObject.getBoolean(NotificationStatus.Thief.getValue());
+                boolean cameraOn = valuesObject.getBoolean(SubscriptionType.Camera.getValue());
+                boolean powerOn = valuesObject.getBoolean(SubscriptionType.Power.getValue());
+                boolean haveTheif = valuesObject.getBoolean(SubscriptionType.Thief.getValue());
 
                 notification = new Notification(powerOn, cameraOn, haveTheif);
             }
@@ -212,5 +221,10 @@ public class Protocol
         } finally {
             return message.toString();
         }
+    }
+
+    @Override
+    public String notificationMessage(String password) {
+        return null;
     }
 }

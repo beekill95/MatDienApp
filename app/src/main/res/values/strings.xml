@@ -8,4 +8,6 @@
     <string name="title_subscriberaction_list">SubscriberActions</string>
     <string name="title_subscriberaction_detail">SubscriberAction Detail</string>
     <string name="add_subscriber">Add Subscriber</string>
+    <string name="take_action">Take Action</string>
+    <string name="ignore">Ignore</string>
 </resources>
