@@ -3,9 +3,11 @@ package com.example.beekill.matdienapp;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Debug;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.example.beekill.matdienapp.activities.NotificationActivity;
 import com.example.beekill.matdienapp.protocol.Notification;
 import com.example.beekill.matdienapp.protocol.Protocol;
 
@@ -47,6 +49,10 @@ public class MatDienService extends IntentService {
                 Notification notification = protocol.getNotification(message);
 
                 // pass the notification to notification activity
+                Intent startNotificationActivityIntent = new Intent(this, NotificationActivity.class);
+                startNotificationActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startNotificationActivityIntent.putExtra("notification", "Some notification here");
+                startActivity(startNotificationActivityIntent);
             }
         }
     }
