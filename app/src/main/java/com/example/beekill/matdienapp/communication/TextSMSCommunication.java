@@ -21,7 +21,7 @@ public class TextSMSCommunication extends DeviceCommunication {
 
     static public class TextSMSReceiverHandler extends BroadcastReceiver
     {
-        TextSMSReceiverHandler() {
+        public TextSMSReceiverHandler() {
 
         }
 
