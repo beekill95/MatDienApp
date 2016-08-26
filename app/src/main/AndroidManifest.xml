@@ -2,8 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.beekill.matdienapp">
 
+    <uses-sdk android:minSdkVersion="13" />
+
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -30,33 +36,11 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".activities.NotificationActivity" />
         <activity
-            android:name=".activities.adminactivity.AdminActionListActivity"
-            android:label="@string/title_adminaction_list"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.adminactivity.AdminActionDetailActivity"
-            android:label="@string/title_adminaction_detail"
-            android:parentActivityName=".activities.adminactivity.AdminActionListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.beekill.matdienapp.activities.adminactivity.AdminActionListActivity" />
-        </activity>
-        <activity
-            android:name=".activities.subscriberactivity.SubscriberActionListActivity"
-            android:label="@string/title_subscriberaction_list"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.subscriberactivity.SubscriberActionDetailActivity"
-            android:label="@string/title_subscriberaction_detail"
-            android:parentActivityName=".activities.subscriberactivity.SubscriberActionListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.beekill.matdienapp.activities.subscriberactivity.SubscriberActionListActivity" />
-        </activity>
-        <activity android:name=".activities.NotificationActivity"></activity>
+            android:name=".activities.AdminActionActivity"
+            android:label="@string/title_activity_admin_action"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

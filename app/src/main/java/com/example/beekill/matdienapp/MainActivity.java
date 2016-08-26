@@ -1,9 +1,11 @@
 package com.example.beekill.matdienapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,16 +14,18 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.example.beekill.matdienapp.communication.TextSMSCommunication;
-import com.example.beekill.matdienapp.hash.Hashing;
-import com.example.beekill.matdienapp.hash.HashingPBKDF2;
 import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
+import com.example.beekill.matdienapp.activities.AdminActionActivity;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity implements DeviceCommunication.ReceivedDataHandler{
     private static final String USER_LOGIN_FILENAME = "users_login_info";
@@ -35,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
     private Button addSubscriberButton;
     private EditText phoneEditText;
 
+    private ThisClassData classData;
+
     private static final String devicePhoneNumber = "6505551212";
 
     @Override
@@ -43,10 +49,6 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
 
         // load users' login information
         loadUserLoginInformation();
-
-        // add some users to our database
-        addUser("quan", "51303225");
-        addUser("tung", "NguyenMaiThanh");
 
         // check if user is login
         //SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
@@ -66,6 +68,16 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
             finish(); // prevent user from using back button to return to this activity
             return;
         }
+
+        /* For testing tabbeb activity purpose */
+        if (true) {
+            Intent i = new Intent(MainActivity.this, AdminActionActivity.class);
+            startActivity(i);
+
+            finish(); // prevent user from using back button to return to this activity
+            return;
+        }
+        /* End testing */
 
         setContentView(R.layout.activity_main);
 
@@ -100,6 +112,9 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
 
         // initialize protocol
         protocol = new Protocol();
+
+        // class data
+        classData = new ThisClassData();
     }
 
     @Override
@@ -174,11 +189,15 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
 
     private void initializeDefaultLoginInformation()
     {
+        // admin password
         String[] password = {"", "password"};
         UserInformation.getInstance().setInformationOf("admin", password);
+
+        // subscriber password
+        UserInformation.getInstance().setInformationOf("subscriber", password);
     }
 
-    private void addUser(String username, String password)
+    /*private void addUser(String username, String password)
     {
         String[] hashedPassword;
         // check whether the user has been registered
@@ -193,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         hashing.hash(password, hashedPassword);
 
         UserInformation.getInstance().setInformationOf(username, hashedPassword);
-    }
+    }*/
 
     private void onSignOutButtonClicked(View v)
     {
@@ -262,7 +281,82 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
 
             // get result
             Response response = protocol.getResponse(data);
-            Log.i(PREF_NAME, "result: " + response.getResult() + " desc: " + response.getDescription());
+            if (response.getResult()) {
+                // received an successful message
+                // edit the data
+                classData.addSubscriber("012934");
+
+                // update
+                receivedResponseFromDevice(true, classData);
+            } else {
+                // update
+                receivedResponseFromDevice(false, classData);
+            }
+        }
+    }
+
+    ////////////////// Testing purpose ///////////////////////
+    private class ThisClassData
+    {
+        List<String> subscriberList;
+
+        ThisClassData()
+        {
+            subscriberList = new ArrayList<>();
+        }
+
+        public boolean addSubscriber(String subscriberPhone)
+        {
+            if (subscriberList.contains(subscriberPhone))
+                return false;
+
+            subscriberList.add(subscriberPhone);
+            return true;
+        }
+
+        public boolean removeSubscriber(String subscriberPhone)
+        {
+            if (!subscriberList.contains(subscriberPhone))
+                return false;
+
+            subscriberList.remove(subscriberPhone);
+            return true;
+        }
+
+        public List<String> getSubscriberList()
+        {
+            return subscriberList;
+        }
+    }
+
+    private void receivedResponseFromDevice(boolean result, ThisClassData thisClassData)
+    {
+        if (result) {
+            // the action is success
+            // update the fragment
+            new AlertDialog.Builder(this)
+                    .setTitle("Received Success Message")
+                    .setMessage(thisClassData.toString())
+                    .setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    // do nothing
+                                }
+                            })
+                    .show();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Received Failed Message")
+                    .setMessage(thisClassData.toString())
+                    .setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    // do nothing
+                                }
+                            })
+                    .show();
         }
     }
 }
