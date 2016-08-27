@@ -51,7 +51,7 @@ public class MatDienService extends IntentService {
                 // pass the notification to notification activity
                 Intent startNotificationActivityIntent = new Intent(this, NotificationActivity.class);
                 startNotificationActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startNotificationActivityIntent.putExtra("notification", "Some notification here");
+                startNotificationActivityIntent.putExtra("notification", notification);
                 startActivity(startNotificationActivityIntent);
             }
         }
