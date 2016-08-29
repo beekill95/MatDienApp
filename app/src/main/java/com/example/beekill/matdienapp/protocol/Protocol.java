@@ -50,20 +50,23 @@ public class Protocol
         public static final String RESULT_SUCCESS_STRING = "SUCCESS";
         public static final String RESULST_FAILED_STRING = "FAILED";
 
-        public static final String STATUS_VALUE_OK_STRING = "on";
-        public static final String STATUS_VALUE_NOT_OK_STRING = "off";
+        public static final String STATUS_VALUE_OK_STRING = "true";
+        public static final String STATUS_VALUE_NOT_OK_STRING = "false";
     }
 
     public DeviceResponseMessageType getDeviceResponseType(String messageString)
     {
-        DeviceResponseMessageType type = null;
+        DeviceResponseMessageType type = DeviceResponseMessageType.Unknown;
         try {
             JSONObject message = new JSONObject(messageString);
 
             if (message.has(ProtocolString.RESULT_FIELD_STRING))
                 type = DeviceResponseMessageType.Response;
-            else if (message.has(ProtocolString.STATUS_VALUE_FIELD_STRING))
-                type = DeviceResponseMessageType.Notification;
+            else if (message.has(ProtocolString.ACTION_FIELD_STRING))
+                if (message.getString(ProtocolString.ACTION_FIELD_STRING).equals("Noti"))
+                    return DeviceResponseMessageType.Notification;
+                else
+                    return DeviceResponseMessageType.Unknown;
             else
                 type = DeviceResponseMessageType.Unknown;
         } catch(JSONException e) {
@@ -178,7 +181,7 @@ public class Protocol
         try {
             JSONObject message = new JSONObject(notificationMessage);
 
-            if (message.has(ProtocolString.STATUS_VALUE_FIELD_STRING)) {
+            /*if (message.has(ProtocolString.STATUS_VALUE_FIELD_STRING)) {
                 JSONObject valuesObject = message.getJSONObject(ProtocolString.STATUS_VALUE_FIELD_STRING);
 
                 boolean cameraOn = valuesObject.getBoolean(SubscriptionType.Camera.getValue());
@@ -186,6 +189,19 @@ public class Protocol
                 boolean haveTheif = valuesObject.getBoolean(SubscriptionType.Thief.getValue());
 
                 notification = new Notification(powerOn, cameraOn, haveTheif);
+            }*/
+
+            if (message.getString(ProtocolString.ACTION_FIELD_STRING).equals("Noti")) {
+                boolean value = message.getBoolean("val");
+
+                String status = message.getString("status");
+
+                if (status.equals("Power"))
+                    notification = new Notification(value, false, false);
+                else if (status.equals("Camera"))
+                    notification = new Notification(false, value, false);
+                else
+                    notification = new Notification(false, false, value);
             }
         } catch(JSONException e) {
             e.printStackTrace();

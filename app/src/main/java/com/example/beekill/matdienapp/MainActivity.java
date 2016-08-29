@@ -17,7 +17,7 @@ import com.example.beekill.matdienapp.communication.TextSMSCommunication;
 import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
-import com.example.beekill.matdienapp.activities.AdminActionActivity;
+import com.example.beekill.matdienapp.activities.Admin.AdminActionActivity;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         Log.i(PREF_NAME, "The message is " + message);
 
         // send the message to device
-        //deviceCommunication.send(message, "so cua device cua Truc");
+        deviceCommunication.send(message, "6505551212");
 
         // set waiting state
         isWaitingReponse = true;
@@ -278,6 +278,10 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
             signOutButton.setEnabled(true);
             addSubscriberButton.setEnabled(true);
             phoneEditText.setEnabled(true);
+
+            // check whether it is an expecting response
+            if (protocol.getDeviceResponseType(data) == Protocol.DeviceResponseMessageType.Unknown)
+                return;
 
             // get result
             Response response = protocol.getResponse(data);

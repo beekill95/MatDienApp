@@ -38,7 +38,7 @@
 
         <activity android:name=".activities.NotificationActivity" />
         <activity
-            android:name=".activities.AdminActionActivity"
+            android:name=".activities.Admin.AdminActionActivity"
             android:label="@string/title_activity_admin_action"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

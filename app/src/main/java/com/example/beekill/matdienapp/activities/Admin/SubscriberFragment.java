@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp.activities.AdminActionFragments;
+package com.example.beekill.matdienapp.activities.Admin;
 
 import android.content.Context;
 import android.net.Uri;
