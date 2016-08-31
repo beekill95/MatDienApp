@@ -23,6 +23,10 @@ import android.widget.TextView;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.Admin.*;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.util.Date;
+
 public class AdminActionActivity extends AppCompatActivity
     implements SubscriberFragment.OnFragmentInteractionListener,
         PhoneAccountFragment.OnFragmentInteractionListener
@@ -150,9 +154,9 @@ public class AdminActionActivity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "Subscriber";
                 case 1:
-                    return "SECTION 2";
+                    return "Device Account";
                 //case 2:
                     //return "SECTION 3";
             }
@@ -163,5 +167,62 @@ public class AdminActionActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         return;
+    }
+
+    // class to store data of admin
+    private class AdminData implements Serializable
+    {
+        private Date subscriberListUpdateDate;
+        private String[] subscriberList;
+
+        private Date deviceAccountUpdateDate;
+        private double deviceAccount;
+
+        public AdminData()
+        {
+            subscriberList = null;
+            subscriberListUpdateDate = null;
+
+            deviceAccountUpdateDate = null;
+            deviceAccount = -1;
+        }
+
+        public void setSubscriberList(String[] subscriberList)
+        {
+            // update the date
+            subscriberListUpdateDate = new Date();
+
+            // update subscriber list
+            this.subscriberList = subscriberList;
+        }
+
+        public Date getSubscriberListUpdateDate()
+        {
+            return subscriberListUpdateDate;
+        }
+
+        public String[] getSubscriberList()
+        {
+            return subscriberList;
+        }
+
+        public void setDeviceAccount(double deviceAccount)
+        {
+            // update the date
+            deviceAccountUpdateDate = new Date();
+
+            // update device account
+            this.deviceAccount = deviceAccount;
+        }
+
+        public double getDeviceAccount()
+        {
+            return deviceAccount;
+        }
+
+        public Date getDeviceAccountUpdateDate()
+        {
+            return deviceAccountUpdateDate;
+        }
     }
 }
