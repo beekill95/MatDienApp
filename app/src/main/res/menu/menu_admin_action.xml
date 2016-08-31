@@ -3,8 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.Admin.AdminActionActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:id="@+id/action_change_password"
+        android:orderInCategory="200"
+        android:title="Change Password"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_sign_out"
+        android:orderInCategory="300"
+        android:title="Sign Out"
         app:showAsAction="never" />
 </menu>
