@@ -1,5 +1,6 @@
 package com.example.beekill.matdienapp.activities.Admin;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +24,12 @@ import android.widget.TextView;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.Admin.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
@@ -31,6 +38,9 @@ public class AdminActionActivity extends AppCompatActivity
     implements SubscriberFragment.OnFragmentInteractionListener,
         PhoneAccountFragment.OnFragmentInteractionListener
 {
+    private AdminData adminData;
+
+    private static final String DataFileName = "AdminActionData.data";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -64,8 +74,17 @@ public class AdminActionActivity extends AppCompatActivity
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        // read the previously stored data (if possible)
+        loadAdminData();
     }
 
+    @Override
+    protected void onDestroy() {
+        saveAdminData();
+
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +108,46 @@ public class AdminActionActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadAdminData()
+    {
+        try {
+            FileInputStream fin = openFileInput(DataFileName);
+
+            // read the object
+            ObjectInputStream objIn = new ObjectInputStream(fin);
+            adminData = (AdminData) objIn.readObject();
+
+            // close file after finish reading
+            objIn.close();
+            fin.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+
+            adminData = new AdminData();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            adminData = new AdminData();
+        }
+    }
+
+    private void saveAdminData()
+    {
+        try {
+            FileOutputStream fout = openFileOutput(DataFileName, Context.MODE_PRIVATE);
+
+            // write the object
+            ObjectOutputStream objOut = new ObjectOutputStream(fout);
+            objOut.writeObject(adminData);
+
+            // close the file
+            objOut.close();
+            fout.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -159,8 +218,6 @@ public class AdminActionActivity extends AppCompatActivity
                     return "Subscriber";
                 case 1:
                     return "Device Account";
-                //case 2:
-                    //return "SECTION 3";
             }
             return null;
         }
