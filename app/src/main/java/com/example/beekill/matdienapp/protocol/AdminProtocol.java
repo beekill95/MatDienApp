@@ -3,7 +3,7 @@ package com.example.beekill.matdienapp.protocol;
 /**
  * Created by beekill on 8/8/16.
  */
-public interface AdminProtocol {
+public interface AdminProtocol extends ResponseProtocol {
     String changeAdminPasswordMessage(String username, String oldPass, String newPass);
     String changeSubscriberPasswordMessage(String username, String oldPass, String newPass, String adminPass);
     String getSubscriberListMessage(String adminPass);

@@ -1,5 +1,7 @@
 package com.example.beekill.matdienapp.communication;
 
+import android.content.Context;
+
 /**
  * Created by beekill on 8/24/16.
  */
@@ -8,10 +10,13 @@ public abstract class CommunicationManager implements DeviceCommunication.Receiv
     protected DeviceCommunication deviceCommunication;
     protected ResultReceivedHandler handler;
 
-    public CommunicationManager(DeviceCommunication deviceCommunication)
+    public CommunicationManager(Context context, DeviceCommunication deviceCommunication)
     {
-        this.deviceCommunication = deviceCommunication;
+        // register broadcast receiver to android system
+        deviceCommunication.registerDataReceiverToAndroid(context);
+
         deviceCommunication.registerHandler(this);
+        this.deviceCommunication = deviceCommunication;
     }
 
     public interface ResultReceivedHandler
@@ -28,9 +33,12 @@ public abstract class CommunicationManager implements DeviceCommunication.Receiv
         this.handler = handler;
     }
 
-    public void removeHandler(ResultReceivedHandler handler)
+    public void removeHandler(Context context, ResultReceivedHandler handler)
     {
         if (this.handler == handler)
             this.handler = null;
+
+        // unregister broadcast receiver to android system
+        deviceCommunication.unregisterDataReceiverToAndroid(context);
     }
 }

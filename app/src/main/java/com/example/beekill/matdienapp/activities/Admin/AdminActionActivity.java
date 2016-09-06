@@ -1,10 +1,8 @@
 package com.example.beekill.matdienapp.activities.Admin;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -13,48 +11,45 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
+import com.example.beekill.matdienapp.UserInformation;
 import com.example.beekill.matdienapp.activities.Admin.*;
+import com.example.beekill.matdienapp.communication.CommunicationManager;
+import com.example.beekill.matdienapp.communication.QueueManager;
+import com.example.beekill.matdienapp.communication.TextSMSCommunication;
+import com.example.beekill.matdienapp.protocol.AdminProtocol;
+import com.example.beekill.matdienapp.protocol.Protocol;
+import com.example.beekill.matdienapp.protocol.Response;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.text.DateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminActionActivity extends AppCompatActivity
     implements SubscriberFragment.OnFragmentInteractionListener,
-        PhoneAccountFragment.OnFragmentInteractionListener
+        PhoneAccountFragment.OnFragmentInteractionListener,
+        CommunicationManager.ResultReceivedHandler
 {
     private AdminData adminData;
+    private CommunicationManager queueManager;
+
+    private List<Pair<Integer, AdminAction>> pendingActions;
+    private AdminProtocol adminProtocol;
 
     private static final String DataFileName = "AdminActionData.data";
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+    private final String deviceAddress = "6505551212";
+    private AdminActionResultReceivedHandler subscriberFragmentHandler;
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
@@ -77,11 +72,22 @@ public class AdminActionActivity extends AppCompatActivity
 
         // read the previously stored data (if possible)
         loadAdminData();
+
+        // set up sending/receiving manager
+        queueManager = new QueueManager(this, new TextSMSCommunication());
+        queueManager.setHandler(this);
+
+        // set up pending actions
+        pendingActions = new ArrayList<>();
+
+        // set up admin protocol
+        adminProtocol = new Protocol();
     }
 
     @Override
     protected void onDestroy() {
         saveAdminData();
+        queueManager.removeHandler(this, this);
 
         super.onDestroy();
     }
@@ -150,45 +156,6 @@ public class AdminActionActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-//    public static class PlaceholderFragment extends Fragment {
-//        /**
-//         * The fragment argument representing the section number for this
-//         * fragment.
-//         */
-//        private static final String ARG_SECTION_NUMBER = "section_number";
-//
-//        public PlaceholderFragment() {
-//        }
-//
-//        /**
-//         * Returns a new instance of this fragment for the given section
-//         * number.
-//         */
-//        public static PlaceholderFragment newInstance(int sectionNumber) {
-//            PlaceholderFragment fragment = new PlaceholderFragment();
-//            Bundle args = new Bundle();
-//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-//            fragment.setArguments(args);
-//            return fragment;
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                                 Bundle savedInstanceState) {
-//            View rootView = inflater.inflate(R.layout.fragment_admin_action, container, false);
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-//            return rootView;
-//        }
-//    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -199,9 +166,12 @@ public class AdminActionActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if (position == 1)
-                return SubscriberFragment.newInstance("hello", "quan");
-            else
+            if (position == 0) {
+                SubscriberFragment subscriberFragment = SubscriberFragment.newInstance("hello", "quan");
+                subscriberFragmentHandler = (AdminActionResultReceivedHandler) subscriberFragment;
+
+                return subscriberFragment;
+            } else
                 return PhoneAccountFragment.newInstance("hello", "quan");
         }
 
@@ -224,64 +194,107 @@ public class AdminActionActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        return;
+    public void onFragmentActionPerform(AdminAction action, Bundle args) {
+        switch (action) {
+            case ADD_SUBSCRIBER:
+                sendAddSubscriberMessage(args);
+                break;
+            case DEL_SUBSCRIBER:
+                sendDelSubscriberMessage(args);
+                break;
+            case RECHARGE_DEVICE_ACCOUNT:
+                sendRechargeDeviceAccountMessage(args);
+                break;
+            case GET_DEVICE_ACCOUNT:
+                sendGetDeviceAccountMessage(args);
+                break;
+            case CHANGE_PASSWORD:
+                sendChangePasswordMessage(args);
+                break;
+            case LIST_SUBSCRIBER:
+                sendListSubscriberMessage(args);
+                break;
+        }
     }
 
-    // class to store data of admin
-    private class AdminData implements Serializable
+    private void sendAddSubscriberMessage(Bundle args)
     {
-        private Date subscriberListUpdateDate;
-        private String[] subscriberList;
 
-        private Date deviceAccountUpdateDate;
-        private double deviceAccount;
+    }
 
-        public AdminData()
-        {
-            subscriberList = null;
-            subscriberListUpdateDate = null;
+    private void sendDelSubscriberMessage(Bundle args)
+    {
 
-            deviceAccountUpdateDate = null;
-            deviceAccount = -1;
+    }
+
+    private void sendRechargeDeviceAccountMessage(Bundle args)
+    {
+
+    }
+
+    private void sendGetDeviceAccountMessage(Bundle args)
+    {
+
+    }
+
+    private void sendChangePasswordMessage(Bundle args)
+    {
+
+    }
+
+    private void sendListSubscriberMessage(Bundle args)
+    {
+        String message = adminProtocol.getSubscriberListMessage(UserInformation.getInstance().getInformationOf("admin")[1]);
+
+        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+        pendingActions.add(Pair.create(messageId, AdminAction.LIST_SUBSCRIBER));
+    }
+
+    @Override
+    public void handleMessageReceived(String message, String fromAddress, int messageId) {
+        // checking whether the message if from the device
+        if (!deviceAddress.equals(fromAddress))
+            throw new RuntimeException("Received message not from expected device");
+
+        // search for pair that match messageId
+        Pair<Integer, AdminAction> actionPair = null;
+        for (Pair<Integer, AdminAction> pair: pendingActions)
+            if (pair.first == messageId) {
+                actionPair = pair;
+                break;
+            }
+
+        // handle the corresponding action
+        switch(actionPair.second) {
+            case ADD_SUBSCRIBER:
+                break;
+            case DEL_SUBSCRIBER:
+                break;
+            case LIST_SUBSCRIBER:
+                handleReceiveListSubscriber(message);
+                break;
+            case CHANGE_PASSWORD:
+                break;
+            case GET_DEVICE_ACCOUNT:
+                break;
+            case RECHARGE_DEVICE_ACCOUNT:
+                break;
         }
 
-        public void setSubscriberList(String[] subscriberList)
-        {
-            // update the date
-            subscriberListUpdateDate = new Date();
+        // remove the pair
+        pendingActions.remove(actionPair);
+    }
 
-            // update subscriber list
-            this.subscriberList = subscriberList;
+    private void handleReceiveListSubscriber(String message)
+    {
+        // get the message
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // update admin data
+            adminData.setSubscriberList(response.getList());
         }
 
-        public Date getSubscriberListUpdateDate()
-        {
-            return subscriberListUpdateDate;
-        }
-
-        public String[] getSubscriberList()
-        {
-            return subscriberList;
-        }
-
-        public void setDeviceAccount(double deviceAccount)
-        {
-            // update the date
-            deviceAccountUpdateDate = new Date();
-
-            // update device account
-            this.deviceAccount = deviceAccount;
-        }
-
-        public double getDeviceAccount()
-        {
-            return deviceAccount;
-        }
-
-        public Date getDeviceAccountUpdateDate()
-        {
-            return deviceAccountUpdateDate;
-        }
+        subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.LIST_SUBSCRIBER);
     }
 }

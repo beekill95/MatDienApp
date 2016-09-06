@@ -106,9 +106,9 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         phoneEditText = (EditText) findViewById(R.id.phoneEditText);
 
         // to communicate with devices
-        deviceCommunication = new TextSMSCommunication();
-        deviceCommunication.registerHandler(this);
-        deviceCommunication.registerDataReceiverToAndroid(this);
+        //deviceCommunication = new TextSMSCommunication();
+        //deviceCommunication.registerHandler(this);
+        //deviceCommunication.registerDataReceiverToAndroid(this);
 
         // initialize protocol
         protocol = new Protocol();

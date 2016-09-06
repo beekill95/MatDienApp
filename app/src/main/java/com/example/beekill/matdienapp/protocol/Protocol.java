@@ -7,7 +7,7 @@ import org.json.*;
  * Created by beekill on 8/8/16.
  */
 public class Protocol
-    implements AdminProtocol, SubscriberProtocol, NotificationProtocol, ResponseProtocol
+    implements AdminProtocol, SubscriberProtocol, NotificationProtocol
 {
     public enum DeviceResponseMessageType {
         Unknown, Response, Notification
@@ -230,8 +230,15 @@ public class Protocol
                 response.setDescription(message.getString(ProtocolString.DESCRIPTION_FIELD_STRING));
 
                 // get list, if any
-                if (message.has(ProtocolString.LIST_FIELD_STRING))
-                    response.setList(null);
+                if (message.has(ProtocolString.LIST_FIELD_STRING)) {
+                    JSONArray subscribers = message.getJSONArray(ProtocolString.LIST_FIELD_STRING);
+
+                    String subscriberPhoneNumbers[] = new String[subscribers.length()];
+                    for (int i = 0; i < subscribers.length(); ++i)
+                        subscriberPhoneNumbers[i] = subscribers.getString(i);
+
+                    response.setList(subscriberPhoneNumbers);
+                }
             }
         } catch(JSONException e) {
             e.printStackTrace();
