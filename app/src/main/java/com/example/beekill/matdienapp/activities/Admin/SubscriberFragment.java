@@ -8,12 +8,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +29,10 @@ import org.w3c.dom.Text;
  * create an instance of this fragment.
  */
 public class SubscriberFragment extends Fragment implements AdminActionResultReceivedHandler{
+    public interface OnFragmentInteractionListener {
+        void onFragmentActionPerform(AdminAction action, Bundle args);
+    }
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,6 +45,9 @@ public class SubscriberFragment extends Fragment implements AdminActionResultRec
     private Button refreshButton;
     private Button removeButton;
     private TextView dateUpdateTextView;
+    private ListView subscriberListView;
+    ArrayList<String> listSubscriber;
+    ArrayAdapter<String> adapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -80,6 +92,11 @@ public class SubscriberFragment extends Fragment implements AdminActionResultRec
         removeButton = (Button) view.findViewById(R.id.removeSubscriberButton);
         dateUpdateTextView = (TextView) view.findViewById(R.id.dataUpdateTextView);
 
+        subscriberListView = (ListView) view.findViewById(R.id.subscriberListView);
+        listSubscriber = new ArrayList<>();
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listSubscriber);
+        subscriberListView.setAdapter(adapter);
+
         refreshButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -115,23 +132,25 @@ public class SubscriberFragment extends Fragment implements AdminActionResultRec
             mListener.onFragmentActionPerform(AdminAction.LIST_SUBSCRIBER, null);
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentActionPerform(AdminAction action, Bundle args);
-    }
-
     @Override
     public void handleResult(boolean result, AdminData adminData, AdminAction adminAction) {
-        if (result)
-            Log.i("MatDienApp", adminData.getSubscriberList().toString());
+        if (result) {
+            displaySubscriberList(adminData);
+        }
+    }
+
+    public void displayData(AdminData adminData)
+    {
+        displaySubscriberList(adminData);
+    }
+
+    private void displaySubscriberList(AdminData adminData)
+    {
+        if (adminData.getSubscriberList() != null) {
+            listSubscriber.clear();
+            listSubscriber.addAll(Arrays.asList(adminData.getSubscriberList()));
+
+            adapter.notifyDataSetChanged();
+        }
     }
 }

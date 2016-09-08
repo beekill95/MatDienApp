@@ -181,16 +181,6 @@ public class Protocol
         try {
             JSONObject message = new JSONObject(notificationMessage);
 
-            /*if (message.has(ProtocolString.STATUS_VALUE_FIELD_STRING)) {
-                JSONObject valuesObject = message.getJSONObject(ProtocolString.STATUS_VALUE_FIELD_STRING);
-
-                boolean cameraOn = valuesObject.getBoolean(SubscriptionType.Camera.getValue());
-                boolean powerOn = valuesObject.getBoolean(SubscriptionType.Power.getValue());
-                boolean haveTheif = valuesObject.getBoolean(SubscriptionType.Thief.getValue());
-
-                notification = new Notification(powerOn, cameraOn, haveTheif);
-            }*/
-
             if (message.getString(ProtocolString.ACTION_FIELD_STRING).equals("Noti")) {
                 boolean value = message.getBoolean("val");
 

@@ -85,11 +85,11 @@ public class AdminActionActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         saveAdminData();
         queueManager.removeHandler(this, this);
 
-        super.onDestroy();
+        super.onStop();
     }
 
     @Override
@@ -168,6 +168,7 @@ public class AdminActionActivity extends AppCompatActivity
             // Return a PlaceholderFragment (defined as a static inner class below).
             if (position == 0) {
                 SubscriberFragment subscriberFragment = SubscriberFragment.newInstance("hello", "quan");
+                subscriberFragment.displayData(adminData);
                 subscriberFragmentHandler = (AdminActionResultReceivedHandler) subscriberFragment;
 
                 return subscriberFragment;
