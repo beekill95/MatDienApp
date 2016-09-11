@@ -30,7 +30,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
     }
 
     private Button refreshButton;
-    private Button removeButton;
+    //private Button removeButton;
     private TextView dateUpdateTextView;
     private ListView subscriberListView;
     ArrayList<String> listSubscriber;
@@ -62,7 +62,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
         View view = inflater.inflate(R.layout.fragment_subscriber, container, false);
 
         refreshButton = (Button) view.findViewById(R.id.refreshSubscriberButton);
-        removeButton = (Button) view.findViewById(R.id.removeSubscriberButton);
+        //removeButton = (Button) view.findViewById(R.id.removeSubscriberButton);
         dateUpdateTextView = (TextView) view.findViewById(R.id.dataUpdateTextView);
 
         subscriberListView = (ListView) view.findViewById(R.id.subscriberListView);
