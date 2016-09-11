@@ -212,13 +212,13 @@ public class AdminActionActivity extends AppCompatActivity
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             if (position == 0) {
-                SubscriberFragment subscriberFragment = SubscriberFragment.newInstance("hello", "quan");
+                SubscriberFragment subscriberFragment = SubscriberFragment.newInstance();
                 subscriberFragment.displayData(adminData);
                 subscriberFragmentHandler = (AdminFragmentCommonInterface) subscriberFragment;
 
                 return subscriberFragment;
             } else if (position == 1) {
-                PhoneAccountFragment phoneAccountFragment = PhoneAccountFragment.newInstance("hello", "quan");
+                PhoneAccountFragment phoneAccountFragment = PhoneAccountFragment.newInstance();
                 phoneAccountFragment.displayData(adminData);
                 phoneAccountFragmentHandler = (AdminFragmentCommonInterface) phoneAccountFragment;
 
