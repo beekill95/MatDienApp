@@ -1,10 +1,8 @@
 package com.example.beekill.matdienapp.activities.Admin;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +24,7 @@ import java.util.Arrays;
  * Use the {@link SubscriberFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SubscriberFragment extends Fragment implements AdminActionResultReceivedHandler{
+public class SubscriberFragment extends Fragment implements AdminFragmentCommonInterface {
     public interface OnFragmentInteractionListener {
         void onFragmentActionPerform(AdminAction action, Bundle args);
     }
@@ -48,6 +44,8 @@ public class SubscriberFragment extends Fragment implements AdminActionResultRec
     private ListView subscriberListView;
     ArrayList<String> listSubscriber;
     ArrayAdapter<String> adapter;
+
+    private AdminData adminData;
 
     private OnFragmentInteractionListener mListener;
 
@@ -106,6 +104,14 @@ public class SubscriberFragment extends Fragment implements AdminActionResultRec
                 }
         );
 
+        if (adminData.getSubscriberListUpdateDate() != null) {
+            listSubscriber.clear();
+            listSubscriber.addAll(Arrays.asList(adminData.getSubscriberList()));
+            dateUpdateTextView.setText(adminData.getSubscriberListUpdateDate().toString());
+
+            adapter.notifyDataSetChanged();
+        }
+
         return view;
     }
 
@@ -139,6 +145,7 @@ public class SubscriberFragment extends Fragment implements AdminActionResultRec
         }
     }
 
+    @Override
     public void displayData(AdminData adminData)
     {
         displaySubscriberList(adminData);
@@ -146,11 +153,6 @@ public class SubscriberFragment extends Fragment implements AdminActionResultRec
 
     private void displaySubscriberList(AdminData adminData)
     {
-        if (adminData.getSubscriberList() != null) {
-            listSubscriber.clear();
-            listSubscriber.addAll(Arrays.asList(adminData.getSubscriberList()));
-
-            adapter.notifyDataSetChanged();
-        }
+        this.adminData = adminData;
     }
 }

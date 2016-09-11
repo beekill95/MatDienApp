@@ -1,14 +1,17 @@
 package com.example.beekill.matdienapp.activities.Admin;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
+
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,7 +21,11 @@ import com.example.beekill.matdienapp.R;
  * Use the {@link PhoneAccountFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PhoneAccountFragment extends Fragment {
+public class PhoneAccountFragment extends Fragment implements AdminFragmentCommonInterface {
+    public interface OnFragmentInteractionListener {
+        void onFragmentActionPerform(AdminAction action, Bundle args);
+    }
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,20 +35,23 @@ public class PhoneAccountFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private Button refreshButton;
+    private Button refillButton;
+
+    private TextView deviceCreditTextView;
+    private TextView updatedDateTextView;
+    private TextView refillCodeTextView;
+
+    // Not a very good solution
+    // will try to refactor this
+    private AdminData adminData;
+
     private OnFragmentInteractionListener mListener;
 
     public PhoneAccountFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PhoneAccountFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static PhoneAccountFragment newInstance(String param1, String param2) {
         PhoneAccountFragment fragment = new PhoneAccountFragment();
@@ -65,13 +75,59 @@ public class PhoneAccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_phone_account, container, false);
+        View view = inflater.inflate(R.layout.fragment_phone_account, container, false);
+
+        // get reference to all our widgets
+        refreshButton = (Button) view.findViewById(R.id.refreshButton);
+        refillButton = (Button) view.findViewById(R.id.refillButton);
+
+        deviceCreditTextView = (TextView) view.findViewById(R.id.deviceCreditTextView);
+        updatedDateTextView = (TextView) view.findViewById(R.id.updatedDateTextView);
+        refillCodeTextView = (TextView) view.findViewById(R.id.refillCodeTextView);
+
+        // register callbacks
+        refreshButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sendGetDeviceAccount();
+                    }
+                }
+        );
+
+        refillButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sendRefillDeviceCredit();
+                    }
+                }
+        );
+
+        if (adminData.getDeviceAccountUpdateDate() != null) {
+            deviceCreditTextView.setText(String.valueOf(adminData.getDeviceAccount()));
+            updatedDateTextView.setText(adminData.getDeviceAccountUpdateDate().toString());
+        }
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    private void sendGetDeviceAccount()
+    {
         if (mListener != null) {
-            mListener.onFragmentActionPerform(null, null);
+            mListener.onFragmentActionPerform(AdminAction.GET_DEVICE_ACCOUNT, null);
+        }
+    }
+
+    private void sendRefillDeviceCredit()
+    {
+        if (mListener != null) {
+            Bundle args = new Bundle();
+
+            String refillCode = refillCodeTextView.getText().toString();
+            args.putString("refillCode", refillCode);
+
+            mListener.onFragmentActionPerform(AdminAction.RECHARGE_DEVICE_ACCOUNT, args);
         }
     }
 
@@ -92,17 +148,27 @@ public class PhoneAccountFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentActionPerform(AdminAction action, Bundle args);
+    @Override
+    public void handleResult(boolean result, AdminData adminData, AdminAction action) {
+        if (result) {
+            // received a successful response
+            double deviceCredit = adminData.getDeviceAccount();
+            Date updateDate = adminData.getDeviceAccountUpdateDate();
+
+            // display it to the users
+            deviceCreditTextView.setText("50000d");
+            updatedDateTextView.setText(updateDate.toString());
+
+            if (action == AdminAction.RECHARGE_DEVICE_ACCOUNT)
+                refillCodeTextView.setText("");
+
+        } else {
+            // TODO: Doing something to inform the users
+        }
+    }
+
+    @Override
+    public void displayData(AdminData data) {
+        adminData = data;
     }
 }

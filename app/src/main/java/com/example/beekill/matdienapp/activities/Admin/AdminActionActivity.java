@@ -1,8 +1,10 @@
 package com.example.beekill.matdienapp.activities.Admin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -16,10 +18,12 @@ import android.view.MenuItem;
 
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.UserInformation;
-import com.example.beekill.matdienapp.activities.Admin.*;
+import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
 import com.example.beekill.matdienapp.communication.TextSMSCommunication;
+import com.example.beekill.matdienapp.hash.Hashing;
+import com.example.beekill.matdienapp.hash.HashingPBKDF2;
 import com.example.beekill.matdienapp.protocol.AdminProtocol;
 import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
@@ -37,16 +41,19 @@ public class AdminActionActivity extends AppCompatActivity
         PhoneAccountFragment.OnFragmentInteractionListener,
         CommunicationManager.ResultReceivedHandler
 {
+    static final int CHANGE_PASSWORD_REQUEST = 7777;
+
     private AdminData adminData;
     private CommunicationManager queueManager;
 
-    private List<Pair<Integer, AdminAction>> pendingActions;
+    private List<Pair<Integer, Pair<AdminAction, Bundle>>> pendingActions;
     private AdminProtocol adminProtocol;
 
     private static final String DataFileName = "AdminActionData.data";
 
     private final String deviceAddress = "6505551212";
-    private AdminActionResultReceivedHandler subscriberFragmentHandler;
+    private AdminFragmentCommonInterface subscriberFragmentHandler;
+    private AdminFragmentCommonInterface phoneAccountFragmentHandler;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -70,26 +77,41 @@ public class AdminActionActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        // read the previously stored data (if possible)
-        loadAdminData();
-
-        // set up sending/receiving manager
-        queueManager = new QueueManager(this, new TextSMSCommunication());
-        queueManager.setHandler(this);
-
         // set up pending actions
         pendingActions = new ArrayList<>();
+
+        queueManager = new QueueManager(this, new TextSMSCommunication());
+        queueManager.setHandler(this);
 
         // set up admin protocol
         adminProtocol = new Protocol();
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        // read the previously stored data (if possible)
+        loadAdminData();
+
+        // set up sending/receiving manager
+        //queueManager = new QueueManager(this, new TextSMSCommunication());
+        //queueManager.setHandler(this);
+    }
+
+    @Override
     protected void onStop() {
         saveAdminData();
-        queueManager.removeHandler(this, this);
+        //queueManager.removeHandler(this, this);
 
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        queueManager.removeHandler(this, this);
+
+        super.onDestroy();
     }
 
     @Override
@@ -108,12 +130,35 @@ public class AdminActionActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_change_password) {
+            // Start change password activity
+            Intent startChangePasswordActivityIntent = new Intent(this, ChangePasswordActivity.class);
+
+            startActivityForResult(startChangePasswordActivityIntent, CHANGE_PASSWORD_REQUEST);
             return true;
         } else if (id == R.id.action_sign_out) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Handle when we received the result from change password activity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // responding to change password request
+        if (requestCode == CHANGE_PASSWORD_REQUEST) {
+            // only process successful request
+            if (resultCode == RESULT_OK) {
+                String oldPass = data.getStringExtra("oldPass");
+                String newPass = data.getStringExtra("newPass");
+
+                Bundle args = new Bundle();
+                args.putString("oldPass", oldPass);
+                args.putString("newPass", newPass);
+
+                sendChangePasswordMessage(args);
+            }
+        }
     }
 
     private void loadAdminData()
@@ -169,16 +214,21 @@ public class AdminActionActivity extends AppCompatActivity
             if (position == 0) {
                 SubscriberFragment subscriberFragment = SubscriberFragment.newInstance("hello", "quan");
                 subscriberFragment.displayData(adminData);
-                subscriberFragmentHandler = (AdminActionResultReceivedHandler) subscriberFragment;
+                subscriberFragmentHandler = (AdminFragmentCommonInterface) subscriberFragment;
 
                 return subscriberFragment;
+            } else if (position == 1) {
+                PhoneAccountFragment phoneAccountFragment = PhoneAccountFragment.newInstance("hello", "quan");
+                phoneAccountFragment.displayData(adminData);
+                phoneAccountFragmentHandler = (AdminFragmentCommonInterface) phoneAccountFragment;
+
+                return phoneAccountFragment;
             } else
-                return PhoneAccountFragment.newInstance("hello", "quan");
+                return null;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return 2;
         }
 
@@ -209,11 +259,10 @@ public class AdminActionActivity extends AppCompatActivity
             case GET_DEVICE_ACCOUNT:
                 sendGetDeviceAccountMessage(args);
                 break;
-            case CHANGE_PASSWORD:
-                sendChangePasswordMessage(args);
-                break;
             case LIST_SUBSCRIBER:
                 sendListSubscriberMessage(args);
+                break;
+            default:
                 break;
         }
     }
@@ -230,17 +279,46 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendRechargeDeviceAccountMessage(Bundle args)
     {
+        String refillCode = args.getString("refillCode");
+        String adminPass = UserInformation.getInstance().getInformationOf("admin")[1];
+        String message = adminProtocol.rechargeAccountCreditMessage(adminPass, refillCode);
 
+        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.RECHARGE_DEVICE_ACCOUNT, args)));
     }
 
     private void sendGetDeviceAccountMessage(Bundle args)
     {
+        String message = adminProtocol.getAccountCreditMessage(UserInformation.getInstance().getInformationOf("admin")[1]);
 
+        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.GET_DEVICE_ACCOUNT, args)));
     }
 
     private void sendChangePasswordMessage(Bundle args)
     {
+        String oldPass = args.getString("oldPass");
+        String newPass = args.getString("newPass");
+        Hashing hashing = new HashingPBKDF2();
 
+        // hash the old pass
+        String oldPassSalt = UserInformation.getInstance().getInformationOf("admin")[0];
+        oldPass = hashing.hash(oldPass, oldPassSalt);
+
+        // hash the new pass
+        String newPassHashed[] = new String[2];
+        hashing.hash(newPass, newPassHashed);
+
+        String message = adminProtocol.changeAdminPasswordMessage("admin", oldPass, newPassHashed[1]);
+
+        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+
+        // put everything to args
+        args.putString("oldPass", oldPass);
+        args.putString("newPassSalt", newPassHashed[0]);
+        args.putString("newPass", newPassHashed[1]);
+
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.CHANGE_PASSWORD, args)));
     }
 
     private void sendListSubscriberMessage(Bundle args)
@@ -248,37 +326,42 @@ public class AdminActionActivity extends AppCompatActivity
         String message = adminProtocol.getSubscriberListMessage(UserInformation.getInstance().getInformationOf("admin")[1]);
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
-        pendingActions.add(Pair.create(messageId, AdminAction.LIST_SUBSCRIBER));
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.LIST_SUBSCRIBER, args)));
     }
 
     @Override
     public void handleMessageReceived(String message, String fromAddress, int messageId) {
+
+
         // checking whether the message if from the device
         if (!deviceAddress.equals(fromAddress))
             throw new RuntimeException("Received message not from expected device");
 
         // search for pair that match messageId
-        Pair<Integer, AdminAction> actionPair = null;
-        for (Pair<Integer, AdminAction> pair: pendingActions)
+        Pair<Integer, Pair<AdminAction, Bundle>> actionPair = null;
+        for (Pair<Integer, Pair<AdminAction, Bundle>> pair: pendingActions)
             if (pair.first == messageId) {
                 actionPair = pair;
                 break;
             }
 
         // handle the corresponding action
-        switch(actionPair.second) {
+        switch(actionPair.second.first) {
             case ADD_SUBSCRIBER:
                 break;
             case DEL_SUBSCRIBER:
                 break;
             case LIST_SUBSCRIBER:
-                handleReceiveListSubscriber(message);
+                handleReceiveListSubscriber(message, actionPair.second.second);
                 break;
             case CHANGE_PASSWORD:
+                handleReceiveChangePassword(message, actionPair.second.second);
                 break;
             case GET_DEVICE_ACCOUNT:
+                handleReceivedDeviceAccount(message, actionPair.second.second);
                 break;
             case RECHARGE_DEVICE_ACCOUNT:
+                handleReceivedRechargeDeviceAccount(message, actionPair.second.second);
                 break;
         }
 
@@ -286,7 +369,23 @@ public class AdminActionActivity extends AppCompatActivity
         pendingActions.remove(actionPair);
     }
 
-    private void handleReceiveListSubscriber(String message)
+    private void handleReceivedDeviceAccount(String message, Bundle args)
+    {
+        // get the message
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // update admin data
+            String accountCreditString = response.getDescription();
+            double accountCredit = Double.parseDouble(accountCreditString);
+
+            adminData.setDeviceAccount(accountCredit);
+        }
+
+        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.GET_DEVICE_ACCOUNT);
+    }
+
+    private void handleReceiveListSubscriber(String message, Bundle args)
     {
         // get the message
         Response response = adminProtocol.getResponse(message);
@@ -297,5 +396,41 @@ public class AdminActionActivity extends AppCompatActivity
         }
 
         subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.LIST_SUBSCRIBER);
+    }
+
+    private void handleReceivedRechargeDeviceAccount(String message, Bundle args)
+    {
+        // get the message
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // TODO: how to handle the result??
+        }
+
+        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.RECHARGE_DEVICE_ACCOUNT);
+    }
+
+    private void handleReceiveChangePassword(String message, Bundle args)
+    {
+        // get the response
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // change password in our database
+            String newPass[] = new String[2];
+            newPass[0] = args.getString("newPassSalt");
+            newPass[1] = args.getString("newPass");
+
+            UserInformation.getInstance().changeInformationOf("admin", newPass);
+            new AlertDialog.Builder(this)
+                    .setTitle("Successful")
+                    .setMessage("Changed password")
+                    .show();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("Failed")
+                    .setMessage("Cannot change password in device")
+                    .show();
+        }
     }
 }
