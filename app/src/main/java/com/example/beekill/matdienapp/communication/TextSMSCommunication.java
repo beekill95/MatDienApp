@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Debug;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -51,6 +52,7 @@ public class TextSMSCommunication extends DeviceCommunication {
                 Bundle bundle = intent.getExtras();
 
                 String[] message = getMessage(bundle);
+                Log.i("MatDienApp", "Received from smsReceiver message " + message);
 
                 // passing to the handler
                 receiveIncomingData(message[MESSAGE_INDEX], message[ADDRESS_INDEX]);
@@ -102,10 +104,12 @@ public class TextSMSCommunication extends DeviceCommunication {
 
         // register the data receiver to android system
         context.getApplicationContext().registerReceiver(smsReceiver, intentFilter);
+        //context.registerReceiver(smsReceiver, intentFilter);
     }
 
     @Override
     public void unregisterDataReceiverToAndroid(Context context) {
-        context.unregisterReceiver(smsReceiver);
+        //context.unregisterReceiver(smsReceiver);
+        context.getApplicationContext().unregisterReceiver(smsReceiver);
     }
 }

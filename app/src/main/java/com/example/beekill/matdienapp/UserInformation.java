@@ -59,4 +59,14 @@ public class UserInformation {
         usersLoginInformation.put(username, password);
         return true;
     }
+
+    public boolean changeInformationOf(String username, String[] password)
+    {
+        if (usersLoginInformation.containsKey(username)) {
+            usersLoginInformation.put(username, password);
+            return true;
+        }
+
+        return false;
+    }
 }

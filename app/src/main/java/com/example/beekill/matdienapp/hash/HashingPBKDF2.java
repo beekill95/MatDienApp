@@ -34,6 +34,9 @@ public class HashingPBKDF2 extends Hashing {
 
     @Override
     public String hash(String password, String salt) {
+        if (salt.equals(""))
+            return password;
+
         try {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), iterations, keyLength);
