@@ -6,17 +6,6 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remove"
-        android:id="@+id/removeSubscriberButton"
-        android:layout_marginRight="27dp"
-        android:layout_marginEnd="27dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,16 +14,6 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_above="@+id/dataUpdateTextView" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/subscriberToRemoveSpinner"
-        android:layout_marginLeft="27dp"
-        android:layout_marginStart="27dp"
-        android:layout_below="@+id/dataUpdateTextView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -54,7 +33,24 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
         android:id="@+id/dataUpdateTextView"
-        android:layout_above="@+id/removeSubscriberButton"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/refreshFloatingButton"
+        android:layout_alignBottom="@+id/subscriberListView"
+        android:layout_alignRight="@+id/refreshSubscriberButton"
+        android:layout_alignEnd="@+id/refreshSubscriberButton" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addSubscriberFloatingButton"
+        android:layout_marginBottom="23dp"
+        android:layout_above="@+id/refreshFloatingButton"
+        android:layout_alignRight="@+id/refreshSubscriberButton"
+        android:layout_alignEnd="@+id/refreshSubscriberButton" />
 
 </RelativeLayout>

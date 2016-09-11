@@ -57,4 +57,21 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="43dp" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/refreshFloatingButton"
+        android:layout_alignTop="@+id/refillButton"
+        android:layout_alignRight="@+id/refreshButton"
+        android:layout_alignEnd="@+id/refreshButton"
+        android:background="@drawable/ic_add_black" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/refillFloatingButton"
+        android:layout_above="@+id/refreshFloatingButton"
+        android:layout_alignRight="@+id/refreshButton"
+        android:layout_alignEnd="@+id/refreshButton" />
+
 </RelativeLayout>
