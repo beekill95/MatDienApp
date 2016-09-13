@@ -1,8 +1,11 @@
 package com.example.beekill.matdienapp.activities;
 
-import android.os.Debug;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
@@ -14,6 +17,10 @@ public class NotificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Debug.waitForDebugger();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
@@ -25,6 +32,11 @@ public class NotificationActivity extends AppCompatActivity {
 
         // display the notification
         displayNotification(notification);
+
+        // play sound
+        Uri noti = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        Ringtone ringtone = RingtoneManager.getRingtone(this, noti);
+        ringtone.play();
     }
 
     private void displayNotification(Notification notification)

@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
 
     private ThisClassData classData;
 
+    //private static final String devicePhoneNumber = "+841237231353";
     private static final String devicePhoneNumber = "6505551212";
 
     @Override
