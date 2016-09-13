@@ -25,7 +25,8 @@
         android:layout_marginRight="25dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,7 +43,8 @@
         android:id="@+id/refreshFloatingButton"
         android:layout_alignBottom="@+id/subscriberListView"
         android:layout_alignRight="@+id/refreshSubscriberButton"
-        android:layout_alignEnd="@+id/refreshSubscriberButton" />
+        android:layout_alignEnd="@+id/refreshSubscriberButton"
+        android:src="@drawable/ic_refresh_black" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -51,6 +53,7 @@
         android:layout_marginBottom="23dp"
         android:layout_above="@+id/refreshFloatingButton"
         android:layout_alignRight="@+id/refreshSubscriberButton"
-        android:layout_alignEnd="@+id/refreshSubscriberButton" />
+        android:layout_alignEnd="@+id/refreshSubscriberButton"
+        android:src="@drawable/ic_add_black" />
 
 </RelativeLayout>

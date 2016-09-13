@@ -1,20 +1,27 @@
 package com.example.beekill.matdienapp.activities.Admin;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
+import com.example.beekill.matdienapp.protocol.SubscriptionType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +36,8 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
         void onFragmentActionPerform(AdminAction action, Bundle args);
     }
 
+    private FloatingActionButton refreshFloatingButton;
+    private FloatingActionButton addSubscriberFloatingButton;
     private Button refreshButton;
     //private Button removeButton;
     private TextView dateUpdateTextView;
@@ -61,7 +70,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_subscriber, container, false);
 
-        refreshButton = (Button) view.findViewById(R.id.refreshSubscriberButton);
+        //refreshButton = (Button) view.findViewById(R.id.refreshSubscriberButton);
         //removeButton = (Button) view.findViewById(R.id.removeSubscriberButton);
         dateUpdateTextView = (TextView) view.findViewById(R.id.dataUpdateTextView);
 
@@ -70,11 +79,31 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listSubscriber);
         subscriberListView.setAdapter(adapter);
 
-        refreshButton.setOnClickListener(
+        /*refreshButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         sendGetSubscriberList();
+                    }
+                }
+        );*/
+
+        refreshFloatingButton = (FloatingActionButton) view.findViewById(R.id.refreshFloatingButton);
+        refreshFloatingButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sendGetSubscriberList();
+                    }
+                }
+        );
+
+        addSubscriberFloatingButton = (FloatingActionButton) view.findViewById(R.id.addSubscriberFloatingButton);
+        addSubscriberFloatingButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getPhoneNumberToSubscribe(view);
                     }
                 }
         );
@@ -111,6 +140,57 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
     {
         if (mListener != null)
             mListener.onFragmentActionPerform(AdminAction.LIST_SUBSCRIBER, null);
+    }
+
+    private void sendAddSubscriber(String phoneNumber, String subscriptionType)
+    {
+        if (mListener != null) {
+            Bundle args = new Bundle();
+            args.putString("phoneNumber", phoneNumber);
+            args.putString("subscriptionType", subscriptionType);
+
+            mListener.onFragmentActionPerform(AdminAction.ADD_SUBSCRIBER, args);
+        }
+    }
+
+    private void getPhoneNumberToSubscribe(View view)
+    {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View phoneNumberView = layoutInflater.inflate(R.layout.dialog_addsubscriber, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setView(phoneNumberView);
+
+        final EditText phoneNumberEditText = (EditText) phoneNumberView.findViewById(R.id.phoneNumberEditText);
+        final Spinner subscriptionTypeSpinner = (Spinner) phoneNumberView.findViewById(R.id.subscriptionTypeSpinner);
+
+        // add items to spinner
+        List<String> list = new ArrayList<>();
+        list.add(SubscriptionType.Camera.getValue());
+        list.add(SubscriptionType.Power.getValue());
+        list.add(SubscriptionType.Thief.getValue());
+        list.add(SubscriptionType.All.getValue());
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, list);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        subscriptionTypeSpinner.setAdapter(adapter);
+
+        alertDialogBuilder
+                .setCancelable(true)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String phoneNumber = phoneNumberEditText.getText().toString();
+                                String subscriptionType = subscriptionTypeSpinner.getSelectedItem().toString();
+
+                                sendAddSubscriber(phoneNumber, subscriptionType);
+                            }
+                        })
+                .setNegativeButton("Cancle", null);
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @Override

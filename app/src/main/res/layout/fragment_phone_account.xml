@@ -34,7 +34,8 @@
         android:layout_marginRight="25dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,10 +43,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/refillCodeTextView"
-        android:layout_marginBottom="125dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/deviceCreditTextView"
-        android:layout_alignStart="@+id/deviceCreditTextView" />
+        android:visibility="invisible"
+        android:layout_above="@+id/refillButton"
+        android:layout_centerHorizontal="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -53,25 +53,28 @@
         android:layout_height="wrap_content"
         android:text="Refill"
         android:id="@+id/refillButton"
+        android:layout_marginBottom="26dp"
+        android:visibility="invisible"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="43dp" />
+        android:layout_centerHorizontal="true" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/refreshFloatingButton"
+        android:background="@drawable/ic_add_black"
         android:layout_alignTop="@+id/refillButton"
         android:layout_alignRight="@+id/refreshButton"
         android:layout_alignEnd="@+id/refreshButton"
-        android:background="@drawable/ic_add_black" />
+        android:src="@drawable/ic_refresh_black" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/refillFloatingButton"
-        android:layout_above="@+id/refreshFloatingButton"
-        android:layout_alignRight="@+id/refreshButton"
-        android:layout_alignEnd="@+id/refreshButton" />
+        android:layout_above="@+id/refillCodeTextView"
+        android:layout_alignLeft="@+id/refreshFloatingButton"
+        android:layout_alignStart="@+id/refreshFloatingButton"
+        android:src="@drawable/ic_add_black" />
 
 </RelativeLayout>
