@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         /* For testing tabbeb activity purpose */
         if (true) {
             Intent i = new Intent(MainActivity.this, AdminActionActivity.class);
+            i.putExtra("deviceAddress", devicePhoneNumber);
             startActivity(i);
 
             finish(); // prevent user from using back button to return to this activity
@@ -119,10 +120,15 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         // saving the users login information
         saveUserLoginInformation();
 
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
         // remove device communicate with devices
         if (deviceCommunication != null) {
             deviceCommunication.unregisterHandler(this);

@@ -51,7 +51,8 @@ public class AdminActionActivity extends AppCompatActivity
 
     private static final String DataFileName = "AdminActionData.data";
 
-    private final String deviceAddress = "6505551212";
+    //private final String deviceAddress = "6505551212";
+    private String deviceAddress;
     private AdminFragmentCommonInterface subscriberFragmentHandler;
     private AdminFragmentCommonInterface phoneAccountFragmentHandler;
 
@@ -63,6 +64,13 @@ public class AdminActionActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_action);
+
+        // check whether there is a phone number in the intent
+        if (getIntent() != null) {
+            Intent intent = getIntent();
+
+            deviceAddress = intent.getStringExtra("deviceAddress");
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
