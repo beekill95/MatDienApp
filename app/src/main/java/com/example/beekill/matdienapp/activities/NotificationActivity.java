@@ -5,6 +5,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import com.example.beekill.matdienapp.protocol.Notification;
 
 public class NotificationActivity extends AppCompatActivity {
     private TextView notificationTextView;
+    private Ringtone ringtone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,7 @@ public class NotificationActivity extends AppCompatActivity {
 
         // play sound
         Uri noti = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        Ringtone ringtone = RingtoneManager.getRingtone(this, noti);
+        ringtone = RingtoneManager.getRingtone(this, noti);
         ringtone.play();
     }
 
@@ -53,5 +55,21 @@ public class NotificationActivity extends AppCompatActivity {
         builder.append(notification.isHaveTheif());
 
         notificationTextView.setText(builder.toString());
+    }
+
+    public void takeActionButtonClicked(View view) {
+        // Todo: doing something here
+        finish();
+    }
+
+    public void ignoreButtonClicked(View view) {
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        ringtone.stop();
+
+        super.onDestroy();
     }
 }

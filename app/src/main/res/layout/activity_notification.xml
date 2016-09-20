@@ -25,16 +25,16 @@
         android:text="@string/take_action"
         android:id="@+id/takeActionButton"
         android:layout_alignTop="@+id/ignoreButton"
-        android:layout_toStartOf="@+id/notificationTextView"
-        android:layout_toLeftOf="@+id/notificationTextView" />
+        android:onClick="takeActionButtonClicked" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ignore"
         android:id="@+id/ignoreButton"
-        android:layout_marginBottom="53dp"
+        android:layout_marginBottom="39dp"
+        android:onClick="ignoreButtonClicked"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/notificationTextView"
-        android:layout_toEndOf="@+id/notificationTextView" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>
