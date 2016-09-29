@@ -2,6 +2,8 @@ package com.example.beekill.matdienapp.activities.Admin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
@@ -66,10 +68,17 @@ public class AdminActionActivity extends AppCompatActivity
         setContentView(R.layout.activity_admin_action);
 
         // check whether there is a phone number in the intent
-        if (getIntent() != null) {
-            Intent intent = getIntent();
 
-            deviceAddress = intent.getStringExtra("deviceAddress");
+        if (savedInstanceState != null) {
+            // restored from previous state
+            deviceAddress = savedInstanceState.getString("deviceAddress");
+        } else {
+            // newly created
+            if (getIntent() != null) {
+                Intent intent = getIntent();
+
+                deviceAddress = intent.getStringExtra("deviceAddress");
+            }
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -108,11 +117,10 @@ public class AdminActionActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         saveAdminData();
-        //queueManager.removeHandler(this, this);
 
-        super.onStop();
+        super.onPause();
     }
 
     @Override
@@ -144,6 +152,7 @@ public class AdminActionActivity extends AppCompatActivity
             startActivityForResult(startChangePasswordActivityIntent, CHANGE_PASSWORD_REQUEST);
             return true;
         } else if (id == R.id.action_sign_out) {
+            //signout();
             return true;
         }
 
@@ -167,6 +176,13 @@ public class AdminActionActivity extends AppCompatActivity
                 sendChangePasswordMessage(args);
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("deviceAddress", deviceAddress);
+
+        super.onSaveInstanceState(outState);
     }
 
     private void loadAdminData()
@@ -209,6 +225,13 @@ public class AdminActionActivity extends AppCompatActivity
         }
     }
 
+    private void signout()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
+                getApplicationContext()
+        );
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -222,13 +245,13 @@ public class AdminActionActivity extends AppCompatActivity
             if (position == 0) {
                 SubscriberFragment subscriberFragment = SubscriberFragment.newInstance();
                 subscriberFragment.displayData(adminData);
-                subscriberFragmentHandler = (AdminFragmentCommonInterface) subscriberFragment;
+                subscriberFragmentHandler = subscriberFragment;
 
                 return subscriberFragment;
             } else if (position == 1) {
                 PhoneAccountFragment phoneAccountFragment = PhoneAccountFragment.newInstance();
                 phoneAccountFragment.displayData(adminData);
-                phoneAccountFragmentHandler = (AdminFragmentCommonInterface) phoneAccountFragment;
+                phoneAccountFragmentHandler = phoneAccountFragment;
 
                 return phoneAccountFragment;
             } else
