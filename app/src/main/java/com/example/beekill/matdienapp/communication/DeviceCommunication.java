@@ -18,6 +18,9 @@ public abstract class DeviceCommunication {
         void handle(String data, String fromAddress);
     }
 
+    public boolean initiateConnection(String deviceAddress) {return true;}
+    public void terminateConnection() {}
+
     /*
     * The functions to send and receive the data
     * The inherited class will need to implement the functions
@@ -26,6 +29,7 @@ public abstract class DeviceCommunication {
     * */
     public abstract void send(String data, String toAddress);
     protected abstract void receiveIncomingData(String data, String fromAddress);
+
 
     /*
     * Private member to store a reference to a class
