@@ -1,5 +1,6 @@
 package com.example.beekill.matdienapp.activities.Admin;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,12 +16,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.UserInformation;
 import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
+import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
 import com.example.beekill.matdienapp.communication.TextSMSCommunication;
@@ -41,9 +45,11 @@ import java.util.List;
 public class AdminActionActivity extends AppCompatActivity
     implements SubscriberFragment.OnFragmentInteractionListener,
         PhoneAccountFragment.OnFragmentInteractionListener,
-        CommunicationManager.ResultReceivedHandler
+        CommunicationManager.ResultReceivedHandler,
+        BluetoothCommunication.BluetoothStatusHandler
 {
     static final int CHANGE_PASSWORD_REQUEST = 7777;
+    static final int ENABLE_BLUETOOTH_REQUEST = 7788;
 
     private AdminData adminData;
     private CommunicationManager queueManager;
@@ -61,6 +67,14 @@ public class AdminActionActivity extends AppCompatActivity
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;
+
+    // for bluetooth
+    //private static final String deviceBluetoothAddress = "18:CF:5E:CB:96:5C";
+    private static final String deviceBluetoothAddress = "98:4F:EE:04:3E:28";
+    private BluetoothCommunication bluetoothCommunication;
+
+    // password
+    private String adminPassword = "admin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +111,20 @@ public class AdminActionActivity extends AppCompatActivity
         // set up pending actions
         pendingActions = new ArrayList<>();
 
-        queueManager = new QueueManager(this, new TextSMSCommunication());
-        queueManager.setHandler(this);
-
         // set up admin protocol
         adminProtocol = new Protocol();
+
+        // start bluetooth
+        bluetoothCommunication = new BluetoothCommunication();
+        bluetoothCommunication.registerBluetoothStatusHandler(this);
+        deviceAddress = deviceBluetoothAddress;
+
+        // initiate bluetooth connection
+        initializeBluetoothConnection();
+
+        // message manager
+        queueManager = new QueueManager(this, bluetoothCommunication);
+        queueManager.setHandler(this);
     }
 
     @Override
@@ -125,6 +148,13 @@ public class AdminActionActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
+        // stop bluetooth
+        bluetoothCommunication.terminateConnection();
+
+        // remove register
+        bluetoothCommunication.unregisterBluetoothStatusHandler(this);
+
+        // remove queue manager
         queueManager.removeHandler(this, this);
 
         super.onDestroy();
@@ -175,6 +205,12 @@ public class AdminActionActivity extends AppCompatActivity
 
                 sendChangePasswordMessage(args);
             }
+        } else if (requestCode == ENABLE_BLUETOOTH_REQUEST) {
+            if (resultCode == RESULT_OK)
+                // start intialize bluetooth connection
+                bluetoothCommunication.initiateConnection(deviceBluetoothAddress);
+            else
+                Toast.makeText(this, "Cannot initialize connection to the device", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -230,6 +266,24 @@ public class AdminActionActivity extends AppCompatActivity
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
                 getApplicationContext()
         );
+    }
+
+    private void initializeBluetoothConnection()
+    {
+        // initialize bluetooth adapter
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, "Your phone doesn't have bluetooth", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // enable bluetooth
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBluetoothIntent, ENABLE_BLUETOOTH_REQUEST);
+        } else
+            // initialize bluetooth connection
+            bluetoothCommunication.initiateConnection(deviceBluetoothAddress);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -300,7 +354,13 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendAddSubscriberMessage(Bundle args)
     {
+        String phoneNumber = args.getString("phoneNumber");
+        String subscriptionType = args.getString("subscriptionType");
 
+        String message = adminProtocol.addSubscriberMessage(adminPassword, phoneNumber, subscriptionType);
+
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.ADD_SUBSCRIBER, args)));
     }
 
     private void sendDelSubscriberMessage(Bundle args)
@@ -311,10 +371,9 @@ public class AdminActionActivity extends AppCompatActivity
     private void sendRechargeDeviceAccountMessage(Bundle args)
     {
         String refillCode = args.getString("refillCode");
-        String adminPass = UserInformation.getInstance().getInformationOf("admin")[1];
-        String message = adminProtocol.rechargeAccountCreditMessage(adminPass, refillCode);
+        String message = adminProtocol.rechargeAccountCreditMessage(adminPassword, refillCode);
 
-        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.RECHARGE_DEVICE_ACCOUNT, args)));
     }
 
@@ -322,7 +381,7 @@ public class AdminActionActivity extends AppCompatActivity
     {
         String message = adminProtocol.getAccountCreditMessage(UserInformation.getInstance().getInformationOf("admin")[1]);
 
-        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.GET_DEVICE_ACCOUNT, args)));
     }
 
@@ -342,7 +401,7 @@ public class AdminActionActivity extends AppCompatActivity
 
         String message = adminProtocol.changeAdminPasswordMessage("admin", oldPass, newPassHashed[1]);
 
-        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
 
         // put everything to args
         args.putString("oldPass", oldPass);
@@ -356,8 +415,15 @@ public class AdminActionActivity extends AppCompatActivity
     {
         String message = adminProtocol.getSubscriberListMessage(UserInformation.getInstance().getInformationOf("admin")[1]);
 
-        int messageId = queueManager.enqueueMessageToSend(message, deviceAddress);
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.LIST_SUBSCRIBER, args)));
+    }
+
+    private void sendInitiationMessage()
+    {
+        String message = adminProtocol.sessionInitialization("admin", adminPassword);
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.SESSION_INITIALIZATION, new Bundle())));
     }
 
     @Override
@@ -379,6 +445,7 @@ public class AdminActionActivity extends AppCompatActivity
         // handle the corresponding action
         switch(actionPair.second.first) {
             case ADD_SUBSCRIBER:
+                handleReceivedAddSubscriber(message, actionPair.second.second);
                 break;
             case DEL_SUBSCRIBER:
                 break;
@@ -394,10 +461,19 @@ public class AdminActionActivity extends AppCompatActivity
             case RECHARGE_DEVICE_ACCOUNT:
                 handleReceivedRechargeDeviceAccount(message, actionPair.second.second);
                 break;
+            case SESSION_INITIALIZATION:
+                handleReceivedSessionInitiation(message);
+                break;
         }
 
         // remove the pair
         pendingActions.remove(actionPair);
+    }
+
+    private void handleReceivedAddSubscriber(String message, Bundle args)
+    {
+        Response response = adminProtocol.getResponse(message);
+        Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
     }
 
     private void handleReceivedDeviceAccount(String message, Bundle args)
@@ -463,5 +539,33 @@ public class AdminActionActivity extends AppCompatActivity
                     .setMessage("Cannot change password in device")
                     .show();
         }
+    }
+
+    private void handleReceivedSessionInitiation(String message) {
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult())
+            Toast.makeText(this, "Session Initiated", Toast.LENGTH_LONG).show();
+        else
+            Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void handleDeviceConnectionResult(boolean isConnected) {
+        // TODO: do something like disable gui or enable
+        if (isConnected) {
+            Toast.makeText(this, "Connected", Toast.LENGTH_LONG).show();
+
+            // send session initiation message
+            sendInitiationMessage();
+        }
+        else
+            Toast.makeText(this, "Cannot connect", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void handleDeviceConnectionLost() {
+        // TODO: do something about this
+        Toast.makeText(this, "Connection lost", Toast.LENGTH_LONG).show();
     }
 }

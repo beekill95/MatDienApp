@@ -15,6 +15,16 @@ import com.example.beekill.matdienapp.protocol.Protocol;
  * Created by beekill on 7/29/16.
  */
 public class MatDienService extends IntentService {
+    final static String devicePhoneNumbers[] = {
+            "+841237231353",
+            "01237231353",
+            "6505551212",
+    //        "0988814686",
+    //        "+84988814686",
+    //        "01695544864",
+    //        "+841695544864"
+    };
+
     public MatDienService() {
         super("MatDienService");
     }
@@ -36,7 +46,7 @@ public class MatDienService extends IntentService {
         String devicePhoneNumber = sharedPreferences.getString("devicePhoneNumber", null);
 
         // only process those messages sent from device phone number
-        if (fromAddress.equals(devicePhoneNumber)) {
+        if (isKnownDevices(devicePhoneNumber)) {
             Log.i("MatDienApp", "Service received message " + message + " from device address " + fromAddress);
 
             // get notification from the message
@@ -55,5 +65,14 @@ public class MatDienService extends IntentService {
                 startActivity(startNotificationActivityIntent);
             }
         }
+    }
+
+    private boolean isKnownDevices(String phoneNumber) {
+        for (String devicePhoneNumber : devicePhoneNumbers) {
+            if (devicePhoneNumber.equals(phoneNumber))
+                return true;
+        }
+
+        return false;
     }
 }

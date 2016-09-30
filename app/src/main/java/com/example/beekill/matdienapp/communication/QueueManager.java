@@ -1,6 +1,7 @@
 package com.example.beekill.matdienapp.communication;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -50,13 +51,19 @@ public class QueueManager extends CommunicationManager {
     public void handle(String data, String fromAddress) {
         // check whether it is from our previously send address
         // or we didn't send any message
-        if (messageQueue.isEmpty() || !messageQueue.peek()[TO_ADDRESS].equals(fromAddress))
+        if (messageQueue.isEmpty() || !messageQueue.peek()[TO_ADDRESS].equals(fromAddress)) {
+            Log.i("MatDienApp", "Not from expected sender " + fromAddress);
+
             // not from our expected sender
             return;
+        }
 
         // pass message back to handler
-        if (handler != null)
+        if (handler != null) {
             handler.handleMessageReceived(data, fromAddress, currentMessageSending);
+        } else {
+            Log.i("MatDienApp", "Handler is null");
+        }
 
         // remove the previously sent message
         messageQueue.remove();

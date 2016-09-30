@@ -39,11 +39,11 @@ public class BluetoothCommunication extends DeviceCommunication {
 
     private BluetoothStatusHandler bluetoothStatusHandler;
 
-    void registerBluetoothStatusHandler(BluetoothStatusHandler handler) {
+    public void registerBluetoothStatusHandler(BluetoothStatusHandler handler) {
         bluetoothStatusHandler = handler;
     }
 
-    void unregisterBluetoothStatusHandler(BluetoothStatusHandler handler) {
+    public void unregisterBluetoothStatusHandler(BluetoothStatusHandler handler) {
         if (handler == bluetoothStatusHandler)
             bluetoothStatusHandler = null;
     }
@@ -145,7 +145,7 @@ public class BluetoothCommunication extends DeviceCommunication {
                         // pass message to the main thread handler
                         Message mainThreadMessage = Message.obtain();
                         mainThreadMessage.what = BLUETOOTH_MESSAGE_RECEIVED;
-                        mainThreadMessage.obj = buffer.toString();
+                        mainThreadMessage.obj = new String(buffer, 0, bytes - 1);
                         threadHandler.sendMessage(mainThreadMessage);
                     } catch (Exception e) {
                         // pass lost connection to device

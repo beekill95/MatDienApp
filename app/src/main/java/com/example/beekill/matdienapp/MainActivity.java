@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         // temporarily method
         String message = protocol.addSubscriberMessage(
                 UserInformation.getInstance().getInformationOf("admin")[1],
-                phoneNumber);
+                phoneNumber, "Power");
 
         Log.i(PREF_NAME, "The message is " + message);
 

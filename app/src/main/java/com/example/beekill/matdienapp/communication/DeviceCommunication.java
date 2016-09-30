@@ -1,6 +1,7 @@
 package com.example.beekill.matdienapp.communication;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Created by beekill on 7/23/16.
@@ -59,7 +60,12 @@ public abstract class DeviceCommunication {
     * */
     protected void handleReceivedData(String data, String fromAddress)
     {
-        handler.handle(data, fromAddress);
+        if (handler != null) {
+            // log what we received
+            Log.i("MatDienApp", "Data received is " + data);
+
+            handler.handle(data, fromAddress);
+        }
     }
 
     /*

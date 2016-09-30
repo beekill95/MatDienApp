@@ -31,6 +31,7 @@ public class Protocol
 
         // json user values
         public static final String ADMIN_USER_STRING = "admin";
+        public static final String SUBSCRIBER_USER_STRING = "subscriber";
 
         // json action values
         public static final String CHANGE_PASS_ACTION_STRING = "ChangePassword";
@@ -40,6 +41,7 @@ public class Protocol
         public static final String CHECK_PHONE_ACCOUNT_ACTION_STRING = "CheckPhoneAcc";
         public static final String REFILL_PHONE_ACCOUNT_ACTION_STRING = "RefillPhoneAcc";
         public static final String UPDATE_STATUS_ACTION_STRING = "UpdateStatus";
+        public static final String SESSION_INITIATION_ACTION_STRING = "SessionInitiation";
 
         public static final String SUBSCRIBE_ACTION_STRING = "Subscribe";
         public static final String UNSUBSCRIBE_ACTION_STRING = "Unsubscribe";
@@ -77,12 +79,13 @@ public class Protocol
     }
 
     @Override
-    public String addSubscriberMessage(String adminPass, String subscriberPhoneNumber) {
+    public String addSubscriberMessage(String adminPass, String subscriberPhoneNumber, String subcriptionType) {
         JSONObject message = new JSONObject();
         try {
             // create message
             message.accumulate(ProtocolString.PASS_FIELD_STRING, adminPass);
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.ADD_SUBSCRIBER_ACTION_STRING);
+            message.accumulate(ProtocolString.STATUS_FIELD_STRING, subcriptionType);
             message.accumulate(ProtocolString.PHONE_NUMBER_FIELD_STRING, subscriberPhoneNumber);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -285,6 +288,20 @@ public class Protocol
         JSONObject message = new JSONObject();
         try {
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.UPDATE_STATUS_ACTION_STRING);
+            message.accumulate(ProtocolString.PASS_FIELD_STRING, password);
+        } catch(JSONException e) {
+            e.printStackTrace();
+        } finally {
+            return message.toString();
+        }
+    }
+
+    @Override
+    public String sessionInitialization(String user, String password) {
+        JSONObject message = new JSONObject();
+        try {
+            message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.SESSION_INITIATION_ACTION_STRING);
+            message.accumulate(ProtocolString.USER_FIELD_STRING, user);
             message.accumulate(ProtocolString.PASS_FIELD_STRING, password);
         } catch(JSONException e) {
             e.printStackTrace();
