@@ -3,6 +3,7 @@
     <string name="sign_in">Sign In</string>
     <string name="log_in">Log In</string>
     <string name="sign_out">Sign Out</string>
+    <string name="logging_in">Logging in</string>
     <string name="title_adminaction_list">AdminActions</string>
     <string name="title_adminaction_detail">AdminAction Detail</string>
     <string name="title_subscriberaction_list">SubscriberActions</string>

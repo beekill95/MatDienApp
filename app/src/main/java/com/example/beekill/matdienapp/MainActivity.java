@@ -72,9 +72,12 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
 
         /* For testing tabbeb activity purpose */
         if (true) {
-            Intent i = new Intent(MainActivity.this, AdminActionActivity.class);
+            /*Intent i = new Intent(MainActivity.this, AdminActionActivity.class);
             i.putExtra("deviceAddress", devicePhoneNumber);
-            startActivity(i);
+            startActivity(i);*/
+
+            Intent startLoginActivity = new Intent(MainActivity.this, LogInActivity.class);
+            startActivity(startLoginActivity);
 
             finish(); // prevent user from using back button to return to this activity
             return;

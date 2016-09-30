@@ -4,6 +4,7 @@ package com.example.beekill.matdienapp;
  * Created by beekill on 7/19/16.
  * Log In activity
  */
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,23 +15,46 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.beekill.matdienapp.activities.Admin.AdminActionActivity;
+import com.example.beekill.matdienapp.communication.BluetoothCommunication;
+import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.hash.Hashing;
 import com.example.beekill.matdienapp.hash.HashingPBKDF2;
+import com.example.beekill.matdienapp.protocol.Protocol;
+import com.example.beekill.matdienapp.protocol.Response;
+import com.example.beekill.matdienapp.protocol.SubscriberProtocol;
 
-public class LogInActivity extends AppCompatActivity {
+public class LogInActivity extends AppCompatActivity
+    implements BluetoothCommunication.BluetoothStatusHandler,
+        DeviceCommunication.ReceivedDataHandler
+{
+    private static final int ENABLE_BLUETOOTH_REQUEST = 1;
+    private static final String[] defaultPasswords = {
+            "admin", "subscriber"
+    };
+
+    private boolean isLoggedIn;
+    private String userPassword;
+    private String deviceBluetoothAddress;
+    BluetoothCommunication bluetoothCommunication;
+
     private EditText usernameEditText;
     private EditText passwordEditText;
+    private Button loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // GUI stuffs
         usernameEditText = (EditText) findViewById(R.id.usernameEditText);
         passwordEditText = (EditText) findViewById(R.id.passwordEditText);
 
-        Button loginButton = (Button)findViewById(R.id.loginButton);
+        loginButton = (Button)findViewById(R.id.loginButton);
+        loginButton.setEnabled(false);
         loginButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -38,71 +62,173 @@ public class LogInActivity extends AppCompatActivity {
                         String username = usernameEditText.getText().toString();
                         String password = passwordEditText.getText().toString();
 
-                        login(username, password);
+                        if (isDefaultPassword(password))
+                            login(username, password, false);
+                        else
+                            login(username, password, true);
                     }
                 }
         );
+
+        // get bluetooth device address
+        //deviceBluetoothAddress = "98:4F:EE:04:3E:28";
+        deviceBluetoothAddress = "18:CF:5E:CB:96:5C";
+
+        // initiate bluetooth communication
+        bluetoothCommunication = new BluetoothCommunication();
+        bluetoothCommunication.registerBluetoothStatusHandler(this);
+        bluetoothCommunication.registerHandler(this);
+        initBluetooth();
+
+        // check whether we are logged in
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
     }
 
-    private void login(String username, final String password)
+    private void initBluetooth()
     {
-        if (checkLoginInformation(username, password)) {
-            // login successfully
-            // write back to shared preferences to tell that a user has signed in
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(
-                    getApplicationContext()
-            ).edit();
-            editor.putBoolean("isLogin", true);
-            editor.commit();
-
-            // turn back to main activity
-            Intent i = new Intent(LogInActivity.this, MainActivity.class);
-            startActivity(i);
-            finish();
-        } else {
-            // login failed
-            // show dialog
-            new AlertDialog.Builder(this)
-                    .setTitle("Cannot Login")
-                    .setMessage("Wrong user name or password")
-                    .setPositiveButton(android.R.string.ok,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // delete all username and password
-                                    usernameEditText.getText().clear();
-                                    passwordEditText.getText().clear();
-                                }
-                            })
-                    .show();
+        // initialize bluetooth adapter
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, "Your phone doesn't have bluetooth", Toast.LENGTH_LONG).show();
+            return;
         }
+
+        // enable bluetooth
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBluetoothIntent, ENABLE_BLUETOOTH_REQUEST);
+        } else
+            // initialize bluetooth connection
+            bluetoothCommunication.initiateConnection(deviceBluetoothAddress);
     }
 
-    // return true if username and password are correct
-    // return false otherwise
-    private boolean checkLoginInformation(String username, String password)
-    {
-        String[] storedPassword = UserInformation.getInstance().getInformationOf(username);
-
-        if (storedPassword == null)
-            // cannot find the given user name in our database
-            return false;
-        else {
-            // we found the given user name
-            // check if the user can login
-            if (storedPassword[0].equals(""))
-                // login with admin account
-                // the first time
-                return storedPassword[1].equals(password);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ENABLE_BLUETOOTH_REQUEST) {
+            if (resultCode == RESULT_OK)
+                // start initialize bluetooth connection
+                bluetoothCommunication.initiateConnection(deviceBluetoothAddress);
             else
-                // login with other account
-                return storedPassword[1].equals(hashPassword(storedPassword[0], password));
+                Toast.makeText(this, "Cannot initialize connection to the device", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private boolean isDefaultPassword(String password) {
+        for (String pass : defaultPasswords)
+            if (pass.equals(password))
+                return true;
+
+        return false;
+    }
+
+    private void login(String username, final String password, boolean shouldBeEncrypt)
+    {
+        if (!shouldBeEncrypt)
+            userPassword = password;
+        else
+            userPassword = password;
+
+        // Compose message to send
+        SubscriberProtocol protocol = new Protocol();
+        String message = protocol.sessionInitialization(username, userPassword);
+
+        // send message
+        bluetoothCommunication.send(message, deviceBluetoothAddress);
+
+        // change the button to disable
+        loginButton.setEnabled(false);
+        loginButton.setText(R.string.logging_in);
     }
 
     private String hashPassword(String salt, String password)
     {
         Hashing hashing = new HashingPBKDF2();
         return hashing.hash(password, salt);
+    }
+
+    @Override
+    public void handleDeviceConnectionResult(boolean isConnected) {
+        if (isConnected) {
+            loginButton.setEnabled(true);
+            Toast.makeText(this, "Connected", Toast.LENGTH_LONG).show();
+
+            if (isLoggedIn) {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+                // we are currently logged in
+                String username = sharedPreferences.getString("userLoggedIn", "subscriber");
+                String password = sharedPreferences.getString("userPassword", "subscriber");
+
+                login(username, password, false);
+            }
+
+        }
+        else
+            Toast.makeText(this, "Cannot connect", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void handleDeviceConnectionLost() {
+        loginButton.setEnabled(false);
+        Toast.makeText(this, "Connection lost", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void handle(String data, String fromAddress) {
+        SubscriberProtocol protocol = new Protocol();
+
+        if (fromAddress.equals(deviceBluetoothAddress)) {
+            // only process data received from known device
+            Response response = protocol.getResponse(data);
+
+            // ignore null pointer
+            if (response == null)
+                return;
+
+            if (response.getResult())
+                onSessionInitiated();
+            else {
+                Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
+
+                loginButton.setEnabled(true);
+                loginButton.setText(R.string.log_in);
+            }
+        }
+    }
+
+    private void onSessionInitiated()
+    {
+        // remove the handler from bluetooth communication
+        bluetoothCommunication.unregisterBluetoothStatusHandler(this);
+        bluetoothCommunication.unregisterHandler(this);
+
+        // store bluetooth communication object to application
+        MatDienApplication app = (MatDienApplication) getApplication();
+        app.storeConnection(bluetoothCommunication);
+
+        // start admin activity or subscriber activity accordingly
+        if (usernameEditText.toString().equals("admin")) {
+            Intent startAdminActivityIntent = new Intent(LogInActivity.this, AdminActionActivity.class);
+
+            startAdminActivityIntent.putExtra("deviceBluetoothAddress", deviceBluetoothAddress);
+            startAdminActivityIntent.putExtra("userPassword", userPassword);
+
+            startActivity(startAdminActivityIntent);
+        } else {
+            // subscriber activity
+
+        }
+
+        // store logged int state
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isLoggedIn", true);
+        editor.putString("userLoggedIn", usernameEditText.toString());
+        editor.putString("userPassword", userPassword);
+        editor.commit();
+
+        // end this activity
+        finish();
     }
 }

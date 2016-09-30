@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.beekill.matdienapp.MatDienApplication;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.UserInformation;
 import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
@@ -60,7 +61,7 @@ public class AdminActionActivity extends AppCompatActivity
     private static final String DataFileName = "AdminActionData.data";
 
     //private final String deviceAddress = "6505551212";
-    private String deviceAddress;
+    //private String deviceAddress;
     private AdminFragmentCommonInterface subscriberFragmentHandler;
     private AdminFragmentCommonInterface phoneAccountFragmentHandler;
 
@@ -70,30 +71,16 @@ public class AdminActionActivity extends AppCompatActivity
 
     // for bluetooth
     //private static final String deviceBluetoothAddress = "18:CF:5E:CB:96:5C";
-    private static final String deviceBluetoothAddress = "98:4F:EE:04:3E:28";
+    private String deviceBluetoothAddress;
     private BluetoothCommunication bluetoothCommunication;
 
     // password
-    private String adminPassword = "admin";
+    private String adminPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_action);
-
-        // check whether there is a phone number in the intent
-
-        if (savedInstanceState != null) {
-            // restored from previous state
-            deviceAddress = savedInstanceState.getString("deviceAddress");
-        } else {
-            // newly created
-            if (getIntent() != null) {
-                Intent intent = getIntent();
-
-                deviceAddress = intent.getStringExtra("deviceAddress");
-            }
-        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,17 +101,37 @@ public class AdminActionActivity extends AppCompatActivity
         // set up admin protocol
         adminProtocol = new Protocol();
 
-        // start bluetooth
-        bluetoothCommunication = new BluetoothCommunication();
-        bluetoothCommunication.registerBluetoothStatusHandler(this);
-        deviceAddress = deviceBluetoothAddress;
+        // get data for this activity
+        if (savedInstanceState != null) {
+            // restored from previous state
+            deviceBluetoothAddress = savedInstanceState.getString("deviceBluetoothAddress");
+            adminPassword = savedInstanceState.getString("adminPassword");
+        } else {
+            // newly created
+            if (getIntent() != null) { // start from log in activity
+                Intent intent = getIntent();
 
-        // initiate bluetooth connection
-        initializeBluetoothConnection();
+                deviceBluetoothAddress = intent.getStringExtra("deviceBluetoothAddress");
+                adminPassword = intent.getStringExtra("userPassword");
+
+                // get bluetooth connection from application
+                MatDienApplication app = (MatDienApplication) getApplication();
+                bluetoothCommunication = (BluetoothCommunication) app.getDeviceCommunication();
+            }
+        }
+
+        // start bluetooth
+        //bluetoothCommunication = new BluetoothCommunication();
+        bluetoothCommunication.registerBluetoothStatusHandler(this);
+        //deviceAddress = deviceBluetoothAddress;
 
         // message manager
         queueManager = new QueueManager(this, bluetoothCommunication);
         queueManager.setHandler(this);
+
+        //if (savedInstanceState != null)
+            // initiate bluetooth connection
+            //initializeBluetoothConnection();
     }
 
     @Override
@@ -216,7 +223,8 @@ public class AdminActionActivity extends AppCompatActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("deviceAddress", deviceAddress);
+        outState.putString("deviceBluetoothAddress", deviceBluetoothAddress);
+        outState.putString("adminPassword", adminPassword);
 
         super.onSaveInstanceState(outState);
     }
@@ -268,7 +276,7 @@ public class AdminActionActivity extends AppCompatActivity
         );
     }
 
-    private void initializeBluetoothConnection()
+    /*private void initializeBluetoothConnection()
     {
         // initialize bluetooth adapter
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -284,7 +292,7 @@ public class AdminActionActivity extends AppCompatActivity
         } else
             // initialize bluetooth connection
             bluetoothCommunication.initiateConnection(deviceBluetoothAddress);
-    }
+    }*/
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -379,7 +387,7 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendGetDeviceAccountMessage(Bundle args)
     {
-        String message = adminProtocol.getAccountCreditMessage(UserInformation.getInstance().getInformationOf("admin")[1]);
+        String message = adminProtocol.getAccountCreditMessage(adminPassword);
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.GET_DEVICE_ACCOUNT, args)));
@@ -413,7 +421,7 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendListSubscriberMessage(Bundle args)
     {
-        String message = adminProtocol.getSubscriberListMessage(UserInformation.getInstance().getInformationOf("admin")[1]);
+        String message = adminProtocol.getSubscriberListMessage(adminPassword);
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.LIST_SUBSCRIBER, args)));
@@ -431,7 +439,7 @@ public class AdminActionActivity extends AppCompatActivity
 
 
         // checking whether the message if from the device
-        if (!deviceAddress.equals(fromAddress))
+        if (!deviceBluetoothAddress.equals(fromAddress))
             throw new RuntimeException("Received message not from expected device");
 
         // search for pair that match messageId
@@ -462,7 +470,7 @@ public class AdminActionActivity extends AppCompatActivity
                 handleReceivedRechargeDeviceAccount(message, actionPair.second.second);
                 break;
             case SESSION_INITIALIZATION:
-                handleReceivedSessionInitiation(message);
+                //handleReceivedSessionInitiation(message);
                 break;
         }
 
@@ -557,7 +565,7 @@ public class AdminActionActivity extends AppCompatActivity
             Toast.makeText(this, "Connected", Toast.LENGTH_LONG).show();
 
             // send session initiation message
-            sendInitiationMessage();
+            //sendInitiationMessage();
         }
         else
             Toast.makeText(this, "Cannot connect", Toast.LENGTH_LONG).show();
