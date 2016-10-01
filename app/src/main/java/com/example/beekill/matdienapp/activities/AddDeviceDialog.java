@@ -3,7 +3,9 @@ package com.example.beekill.matdienapp.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -26,6 +28,10 @@ public class AddDeviceDialog extends AppCompatActivity {
 
         bluetoothAddressEditText = (EditText) findViewById(R.id.bluetoothAddressEditText);
         phoneNumberEditText = (EditText) findViewById(R.id.phoneNumberEditText);
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = (int) (metrics.widthPixels * 0.90);
+        getWindow().setLayout(screenWidth, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 
     public void onOkButtonClicked(View view) {

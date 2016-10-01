@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.beekill.matdienapp.DeviceInformation;
+import com.example.beekill.matdienapp.LogInActivity;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.AddDeviceDialog;
 
@@ -47,7 +48,11 @@ public class DevicesActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         if (i == deviceInformations.size()) {
+                            // users press add new device item
                             startAddDeviceDialog();
+                        } else {
+                            // users touch a device
+                            logInDevice(deviceInformations.get(i));
                         }
                     }
                 }
@@ -97,6 +102,14 @@ public class DevicesActivity extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
         gridView.invalidateViews();
+    }
+
+    private void logInDevice(DeviceInformation device) {
+        String bluetoothAddress = device.getBluetoothAddress();
+
+        Intent logInDeviceIntent = new Intent(this, LogInActivity.class);
+        logInDeviceIntent.putExtra("bluetoothAddress", bluetoothAddress);
+        startActivity(logInDeviceIntent);
     }
 
     @Override

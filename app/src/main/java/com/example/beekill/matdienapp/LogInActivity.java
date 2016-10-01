@@ -32,6 +32,9 @@ public class LogInActivity extends AppCompatActivity
     private static final String[] defaultPasswords = {
             "admin", "subscriber"
     };
+    public static final String IS_LOGGED_IN_STR = "isLoggedIn";
+    public static final String USER_LOGGED_IN_STR = "userLoggedIn";
+    public static final String USER_PASSWORD_STR = "userPassword";
 
     private boolean isLoggedIn;
     private String userPassword;
@@ -69,9 +72,12 @@ public class LogInActivity extends AppCompatActivity
         );
 
         // get bluetooth device address
-        //deviceBluetoothAddress = "98:4F:EE:04:3E:28";
-        deviceBluetoothAddress = "18:CF:5E:CB:96:5C";
-
+        if (getIntent() != null) {
+            deviceBluetoothAddress = getIntent().getStringExtra("bluetoothAddress");
+        } else {
+            //deviceBluetoothAddress = "98:4F:EE:04:3E:28";
+            deviceBluetoothAddress = "18:CF:5E:CB:96:5C";
+        }
         // initiate bluetooth communication
         bluetoothCommunication = new BluetoothCommunication();
         bluetoothCommunication.registerBluetoothStatusHandler(this);
@@ -221,9 +227,9 @@ public class LogInActivity extends AppCompatActivity
         // store logged int state
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("isLoggedIn", true);
-        editor.putString("userLoggedIn", usernameEditText.toString());
-        editor.putString("userPassword", userPassword);
+        editor.putBoolean(IS_LOGGED_IN_STR, true);
+        editor.putString(USER_LOGGED_IN_STR, usernameEditText.toString());
+        editor.putString(USER_PASSWORD_STR, userPassword);
         editor.commit();
 
         // end this activity

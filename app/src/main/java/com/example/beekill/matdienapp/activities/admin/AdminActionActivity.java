@@ -19,6 +19,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.beekill.matdienapp.LogInActivity;
+import com.example.beekill.matdienapp.MainActivity;
 import com.example.beekill.matdienapp.MatDienApplication;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.UserInformation;
@@ -186,7 +188,7 @@ public class AdminActionActivity extends AppCompatActivity
             startActivityForResult(startChangePasswordActivityIntent, CHANGE_PASSWORD_REQUEST);
             return true;
         } else if (id == R.id.action_sign_out) {
-            //signout();
+            signout();
             return true;
         }
 
@@ -268,9 +270,20 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void signout()
     {
+        // modify shared preferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
                 getApplicationContext()
         );
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(LogInActivity.IS_LOGGED_IN_STR, false);
+        editor.putString(LogInActivity.USER_LOGGED_IN_STR, "");
+        editor.putString(LogInActivity.USER_PASSWORD_STR, "");
+        editor.commit();
+
+        // start main activity
+        Intent startMainActivityIntent = new Intent(this, MainActivity.class);
+        startActivity(startMainActivityIntent);
+        finish();
     }
 
     /*private void initializeBluetoothConnection()
