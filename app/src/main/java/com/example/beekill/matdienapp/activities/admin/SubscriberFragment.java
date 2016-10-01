@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp.activities.Admin;
+package com.example.beekill.matdienapp.activities.admin;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -177,7 +177,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
         alertDialogBuilder
                 .setCancelable(true)
-                .setPositiveButton("OK",
+                .setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -187,7 +187,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
                                 sendAddSubscriber(phoneNumber, subscriptionType);
                             }
                         })
-                .setNegativeButton("Cancle", null);
+                .setNegativeButton(android.R.string.cancel, null);
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();

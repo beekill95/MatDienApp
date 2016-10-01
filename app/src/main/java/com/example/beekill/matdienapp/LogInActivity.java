@@ -5,11 +5,9 @@ package com.example.beekill.matdienapp;
  * Log In activity
  */
 import android.bluetooth.BluetoothAdapter;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.beekill.matdienapp.activities.Admin.AdminActionActivity;
+import com.example.beekill.matdienapp.activities.admin.AdminActionActivity;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.hash.Hashing;

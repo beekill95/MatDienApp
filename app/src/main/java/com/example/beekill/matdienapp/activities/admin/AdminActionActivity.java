@@ -1,6 +1,5 @@
-package com.example.beekill.matdienapp.activities.Admin;
+package com.example.beekill.matdienapp.activities.admin;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -28,7 +26,6 @@ import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
-import com.example.beekill.matdienapp.communication.TextSMSCommunication;
 import com.example.beekill.matdienapp.hash.Hashing;
 import com.example.beekill.matdienapp.hash.HashingPBKDF2;
 import com.example.beekill.matdienapp.protocol.AdminProtocol;

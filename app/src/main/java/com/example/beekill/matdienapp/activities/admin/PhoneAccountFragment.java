@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp.activities.Admin;
+package com.example.beekill.matdienapp.activities.admin;
 
 import android.content.Context;
 import android.os.Bundle;

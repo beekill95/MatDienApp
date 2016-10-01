@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp.activities.Admin;
+package com.example.beekill.matdienapp.activities.admin;
 
 /**
  * Created by beekill on 9/5/16.

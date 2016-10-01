@@ -13,11 +13,10 @@ import android.widget.Button;
 import android.view.View;
 import android.widget.EditText;
 
-import com.example.beekill.matdienapp.communication.TextSMSCommunication;
+import com.example.beekill.matdienapp.activities.devices.DevicesActivity;
 import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
-import com.example.beekill.matdienapp.activities.Admin.AdminActionActivity;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -61,17 +60,16 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         editor.commit();
         boolean isLogin = sharedPreferences.getBoolean("isLogin", false);
 
-        if (!isLogin) {
-            // show login activity
-            Intent i = new Intent(MainActivity.this, LogInActivity.class);
-            startActivity(i);
+        /* For testing tabbeb activity purpose */
+        if (true) {
+            Intent startDevicesActivity = new Intent(MainActivity.this, DevicesActivity.class);
+            startActivity(startDevicesActivity);
 
-            finish(); // prevent user from using back button to return to this activity
+            finish();
             return;
         }
 
-        /* For testing tabbeb activity purpose */
-        if (true) {
+        if (false) {
             /*Intent i = new Intent(MainActivity.this, AdminActionActivity.class);
             i.putExtra("deviceAddress", devicePhoneNumber);
             startActivity(i);*/
@@ -83,6 +81,15 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
             return;
         }
         /* End testing */
+
+        if (!isLogin) {
+            // show login activity
+            Intent i = new Intent(MainActivity.this, LogInActivity.class);
+            startActivity(i);
+
+            finish(); // prevent user from using back button to return to this activity
+            return;
+        }
 
         setContentView(R.layout.activity_main);
 
