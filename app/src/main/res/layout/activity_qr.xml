@@ -7,7 +7,7 @@
     android:keepScreenOn="true"
     tools:context=".qrreader.QRActivity">
 
-    <com.gnzlt.AndroidVisionQRReader.camera.CameraSourcePreview
+    <com.example.beekill.matdienapp.qrreader.CameraSourcePreview
         android:id="@+id/cameraSourcePreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

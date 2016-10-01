@@ -1,6 +1,7 @@
 package com.example.beekill.matdienapp.activities.devices;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,10 +15,13 @@ import android.widget.Toast;
 
 import com.example.beekill.matdienapp.DeviceInformation;
 import com.example.beekill.matdienapp.R;
+import com.example.beekill.matdienapp.activities.AddDeviceDialog;
 
 import java.util.ArrayList;
 
 public class DevicesActivity extends AppCompatActivity {
+
+    private final static int ADD_DEVICE_REQUEST = 1;
 
     private ArrayList<DeviceInformation> deviceInformations;
     GridView gridView;
@@ -51,7 +55,7 @@ public class DevicesActivity extends AppCompatActivity {
     }
 
     private void startAddDeviceDialog() {
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        /*LayoutInflater layoutInflater = LayoutInflater.from(this);
         View dialog = layoutInflater.inflate(R.layout.dialog_add_device, null);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -81,7 +85,10 @@ public class DevicesActivity extends AppCompatActivity {
                 .setNegativeButton(android.R.string.cancel, null);
 
         AlertDialog alertDialog = dialogBuilder.create();
-        alertDialog.show();
+        alertDialog.show();*/
+
+        Intent addDeviceIntent = new Intent(this, AddDeviceDialog.class);
+        startActivityForResult(addDeviceIntent, ADD_DEVICE_REQUEST, null);
     }
 
     private void addNewDevice(String bluetoothAddress, String phoneNumber) {
@@ -90,5 +97,17 @@ public class DevicesActivity extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
         gridView.invalidateViews();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ADD_DEVICE_REQUEST && resultCode == RESULT_OK) {
+            String bluetoothAddress = data.getStringExtra(AddDeviceDialog.BLUETOOTH_ADDRESS);
+            String phoneNumber = data.getStringExtra(AddDeviceDialog.PHONE_NUMBER);
+
+            addNewDevice(bluetoothAddress, phoneNumber);
+        }
     }
 }
