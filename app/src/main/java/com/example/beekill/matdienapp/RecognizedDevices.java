@@ -7,10 +7,8 @@ import java.util.ArrayList;
  * Created by beekill on 9/29/16.
  */
 public class RecognizedDevices implements Serializable {
-    public static final int BLUETOOTH_ADDRESS = 0;
-    public static final int PHONE_NUMBER = 1;
 
-    private ArrayList<String[]> devices;
+    private ArrayList<DeviceInformation> devices;
 
     public RecognizedDevices() {
         devices = new ArrayList<>();
@@ -18,19 +16,17 @@ public class RecognizedDevices implements Serializable {
 
     public void addNewDevice(String bluetoothAddress, String phoneNumber)
     {
-        String device[] = {bluetoothAddress, phoneNumber};
-
-        devices.add(devices.size(), device);
+        devices.add(devices.size(), new DeviceInformation(bluetoothAddress, phoneNumber));
     }
 
-    public String[] getDevice(int index) {
+    public DeviceInformation getDevice(int index) {
         if (index >= devices.size())
             return null;
 
         return devices.get(index);
     }
 
-    public String[] removeDevice(int index) {
+    public DeviceInformation removeDevice(int index) {
         if (index >= devices.size())
             return null;
 

@@ -281,8 +281,8 @@ public class AdminActionActivity extends AppCompatActivity
         editor.commit();
 
         // start main activity
-        Intent startMainActivityIntent = new Intent(this, MainActivity.class);
-        startActivity(startMainActivityIntent);
+        //Intent startMainActivityIntent = new Intent(this, MainActivity.class);
+        //startActivity(startMainActivityIntent);
         finish();
     }
 
@@ -405,7 +405,7 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendChangePasswordMessage(Bundle args)
     {
-        String oldPass = args.getString("oldPass");
+        /*String oldPass = args.getString("oldPass");
         String newPass = args.getString("newPass");
         Hashing hashing = new HashingPBKDF2();
 
@@ -426,7 +426,9 @@ public class AdminActionActivity extends AppCompatActivity
         args.putString("newPassSalt", newPassHashed[0]);
         args.putString("newPass", newPassHashed[1]);
 
-        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.CHANGE_PASSWORD, args)));
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.CHANGE_PASSWORD, args)));*/
+        // TODO: change to using md5
+        // TODO: using the given password
     }
 
     private void sendListSubscriberMessage(Bundle args)
@@ -541,12 +543,6 @@ public class AdminActionActivity extends AppCompatActivity
         Response response = adminProtocol.getResponse(message);
 
         if (response.getResult()) {
-            // change password in our database
-            String newPass[] = new String[2];
-            newPass[0] = args.getString("newPassSalt");
-            newPass[1] = args.getString("newPass");
-
-            UserInformation.getInstance().changeInformationOf("admin", newPass);
             new AlertDialog.Builder(this)
                     .setTitle("Successful")
                     .setMessage("Changed password")

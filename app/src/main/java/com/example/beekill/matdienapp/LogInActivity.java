@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -211,8 +212,10 @@ public class LogInActivity extends AppCompatActivity
         MatDienApplication app = (MatDienApplication) getApplication();
         app.storeConnection(bluetoothCommunication);
 
+        Log.i("MatDienApp", "User type in is: " + usernameEditText.getText().toString());
+
         // start admin activity or subscriber activity accordingly
-        if (usernameEditText.toString().equals("admin")) {
+        if (usernameEditText.getText().toString().equals("admin")) {
             Intent startAdminActivityIntent = new Intent(LogInActivity.this, AdminActionActivity.class);
 
             startAdminActivityIntent.putExtra("deviceBluetoothAddress", deviceBluetoothAddress);
@@ -228,7 +231,7 @@ public class LogInActivity extends AppCompatActivity
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(IS_LOGGED_IN_STR, true);
-        editor.putString(USER_LOGGED_IN_STR, usernameEditText.toString());
+        editor.putString(USER_LOGGED_IN_STR, usernameEditText.getText().toString());
         editor.putString(USER_PASSWORD_STR, userPassword);
         editor.commit();
 

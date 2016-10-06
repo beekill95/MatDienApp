@@ -1,9 +1,11 @@
 package com.example.beekill.matdienapp;
 
+import java.io.Serializable;
+
 /**
  * Created by beekill on 10/1/16.
  */
-public class DeviceInformation {
+public class DeviceInformation implements Serializable {
     private String bluetoothAddress;
     private String phoneAddress;
 
