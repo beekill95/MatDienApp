@@ -33,6 +33,7 @@ import com.example.beekill.matdienapp.hash.HashingPBKDF2;
 import com.example.beekill.matdienapp.protocol.AdminProtocol;
 import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
+import com.example.beekill.matdienapp.protocol.SubscriptionType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -375,7 +376,7 @@ public class AdminActionActivity extends AppCompatActivity
         String phoneNumber = args.getString("phoneNumber");
         String subscriptionType = args.getString("subscriptionType");
 
-        String message = adminProtocol.addSubscriberMessage(adminPassword, phoneNumber, subscriptionType);
+        String message = adminProtocol.addSubscriberMessage(phoneNumber, subscriptionType);
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.ADD_SUBSCRIBER, args)));
@@ -383,13 +384,18 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendDelSubscriberMessage(Bundle args)
     {
+        String status = args.getString("status");
+        String phoneNumber = args.getString("phoneNumber");
+        String message = adminProtocol.removeSubscriberMessage(status, phoneNumber);
 
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.DEL_SUBSCRIBER, args)));
     }
 
     private void sendRechargeDeviceAccountMessage(Bundle args)
     {
         String refillCode = args.getString("refillCode");
-        String message = adminProtocol.rechargeAccountCreditMessage(adminPassword, refillCode);
+        String message = adminProtocol.rechargeAccountCreditMessage(refillCode);
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.RECHARGE_DEVICE_ACCOUNT, args)));
@@ -397,7 +403,7 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendGetDeviceAccountMessage(Bundle args)
     {
-        String message = adminProtocol.getAccountCreditMessage(adminPassword);
+        String message = adminProtocol.getAccountCreditMessage();
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.GET_DEVICE_ACCOUNT, args)));
@@ -449,7 +455,6 @@ public class AdminActionActivity extends AppCompatActivity
     @Override
     public void handleMessageReceived(String message, String fromAddress, int messageId) {
 
-
         // checking whether the message if from the device
         if (!deviceBluetoothAddress.equals(fromAddress))
             throw new RuntimeException("Received message not from expected device");
@@ -468,6 +473,7 @@ public class AdminActionActivity extends AppCompatActivity
                 handleReceivedAddSubscriber(message, actionPair.second.second);
                 break;
             case DEL_SUBSCRIBER:
+                handleReceivedRemoveSubscriber(message, actionPair.second.second);
                 break;
             case LIST_SUBSCRIBER:
                 handleReceiveListSubscriber(message, actionPair.second.second);
@@ -490,10 +496,55 @@ public class AdminActionActivity extends AppCompatActivity
         pendingActions.remove(actionPair);
     }
 
+    private void handleReceivedRemoveSubscriber(String message, Bundle args) {
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // successful
+            String phoneNumber = args.getString("phoneNumber");
+            String subscriptionType = args.getString("subscriptionType");
+
+            if (SubscriptionType.Power.getValue().equals(subscriptionType))
+                adminData.removePowerSubscriber(phoneNumber);
+            else if (SubscriptionType.Camera.getValue().equals(subscriptionType))
+                adminData.removeCameraSubscriber(phoneNumber);
+            else if (SubscriptionType.Thief.getValue().equals(subscriptionType))
+                adminData.removeThiefSubscriber(phoneNumber);
+            else if (SubscriptionType.All.getValue().equals(subscriptionType)) {
+                adminData.removePowerSubscriber(phoneNumber);
+                adminData.removeCameraSubscriber(phoneNumber);
+                adminData.removeThiefSubscriber(phoneNumber);
+            }
+        }
+
+        Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
+        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.DEL_SUBSCRIBER);
+    }
+
     private void handleReceivedAddSubscriber(String message, Bundle args)
     {
         Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // successful
+            String phoneNumber = args.getString("phoneNumber");
+            String subscriptionType = args.getString("subscriptionType");
+
+            if (SubscriptionType.Power.getValue().equals(subscriptionType))
+                adminData.addPowerSubscriber(phoneNumber);
+            else if (SubscriptionType.Camera.getValue().equals(subscriptionType))
+                adminData.addCameraSubscriber(phoneNumber);
+            else if (SubscriptionType.Thief.getValue().equals(subscriptionType))
+                adminData.addThiefSubscriber(phoneNumber);
+            else if (SubscriptionType.All.getValue().equals(subscriptionType)) {
+                adminData.addThiefSubscriber(phoneNumber);
+                adminData.addPowerSubscriber(phoneNumber);
+                adminData.addCameraSubscriber(phoneNumber);
+            }
+        }
+
         Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
+        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.ADD_SUBSCRIBER);
     }
 
     private void handleReceivedDeviceAccount(String message, Bundle args)
@@ -518,8 +569,15 @@ public class AdminActionActivity extends AppCompatActivity
         Response response = adminProtocol.getResponse(message);
 
         if (response.getResult()) {
-            // update admin data
-            adminData.setSubscriberList(response.getList());
+            String status = args.getString("status");
+            String[] subscriberList = response.getList();
+
+            if (SubscriptionType.Power.getValue().equals(status))
+                adminData.setPowerSubscribers(subscriberList);
+            else if (SubscriptionType.Camera.getValue().equals(status))
+                adminData.setCameraSubscribers(subscriberList);
+            else if (SubscriptionType.Thief.getValue().equals(status))
+                adminData.setThiefSubscribers(subscriberList);
         }
 
         subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.LIST_SUBSCRIBER);

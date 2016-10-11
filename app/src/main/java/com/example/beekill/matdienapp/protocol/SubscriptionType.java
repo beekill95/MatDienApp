@@ -6,14 +6,14 @@ package com.example.beekill.matdienapp.protocol;
 public enum SubscriptionType {
     None("None"), Power("Power"), Camera("Camera"), Thief("Thief"), All("All");
 
-    private String value;
+    private final String value;
 
     SubscriptionType(String value)
     {
         this.value = value;
     }
 
-    public String getValue()
+    final public String getValue()
     {
         return value;
     }

@@ -35,7 +35,7 @@ public class Protocol
 
         // json action values
         public static final String CHANGE_PASS_ACTION_STRING = "ChangePassword";
-        public static final String GET_SUBSCRIBER_LIST_ACTION_STRING = "GetSubscriber";
+        public static final String GET_SUBSCRIBER_LIST_ACTION_STRING = "GetSubscriberList";
         public static final String DELETE_SUBSCRIBER_ACTION_STRING = "DelSubscriber";
         public static final String ADD_SUBSCRIBER_ACTION_STRING = "AddSubscriber";
         public static final String CHECK_PHONE_ACCOUNT_ACTION_STRING = "CheckPhoneAcc";
@@ -79,11 +79,10 @@ public class Protocol
     }
 
     @Override
-    public String addSubscriberMessage(String adminPass, String subscriberPhoneNumber, String subcriptionType) {
+    public String addSubscriberMessage(String subscriberPhoneNumber, String subcriptionType) {
         JSONObject message = new JSONObject();
         try {
             // create message
-            message.accumulate(ProtocolString.PASS_FIELD_STRING, adminPass);
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.ADD_SUBSCRIBER_ACTION_STRING);
             message.accumulate(ProtocolString.STATUS_FIELD_STRING, subcriptionType);
             message.accumulate(ProtocolString.PHONE_NUMBER_FIELD_STRING, subscriberPhoneNumber);
@@ -125,11 +124,11 @@ public class Protocol
     }
 
     @Override
-    public String getSubscriberListMessage(String adminPass) {
+    public String getSubscriberListMessage(String status) {
         JSONObject message = new JSONObject();
         try {
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.GET_SUBSCRIBER_LIST_ACTION_STRING);
-            message.accumulate(ProtocolString.PASS_FIELD_STRING, adminPass);
+            message.accumulate(ProtocolString.STATUS_FIELD_STRING, status);
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {
@@ -138,12 +137,12 @@ public class Protocol
     }
 
     @Override
-    public String removeSubscriberMessage(String adminPass, String subscriberPhoneNumber) {
+    public String removeSubscriberMessage(String status, String subscriberPhoneNumber) {
         JSONObject message = new JSONObject();
         try {
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.DELETE_SUBSCRIBER_ACTION_STRING);
-            message.accumulate(ProtocolString.PASS_FIELD_STRING, adminPass);
             message.accumulate(ProtocolString.PHONE_NUMBER_FIELD_STRING, subscriberPhoneNumber);
+            message.accumulate(ProtocolString.STATUS_FIELD_STRING, status);
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {
@@ -152,11 +151,10 @@ public class Protocol
     }
 
     @Override
-    public String getAccountCreditMessage(String adminPass) {
+    public String getAccountCreditMessage() {
         JSONObject message = new JSONObject();
         try {
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.CHECK_PHONE_ACCOUNT_ACTION_STRING);
-            message.accumulate(ProtocolString.PASS_FIELD_STRING, adminPass);
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {
@@ -165,11 +163,10 @@ public class Protocol
     }
 
     @Override
-    public String rechargeAccountCreditMessage(String adminPass, String creditCardId) {
+    public String rechargeAccountCreditMessage(String creditCardId) {
         JSONObject message = new JSONObject();
         try {
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.REFILL_PHONE_ACCOUNT_ACTION_STRING);
-            message.accumulate(ProtocolString.PASS_FIELD_STRING, adminPass);
             message.accumulate(ProtocolString.RECHARGE_CREDIT_CODE_FIELD_STRING, creditCardId);
         } catch(JSONException e) {
             e.printStackTrace();
