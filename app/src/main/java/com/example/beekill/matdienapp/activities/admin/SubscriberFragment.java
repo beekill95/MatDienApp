@@ -110,7 +110,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
         if (adminData.getSubscriberListUpdateDate() != null) {
             listSubscriber.clear();
-            listSubscriber.addAll(Arrays.asList(adminData.getSubscriberList()));
+            listSubscriber.addAll(Arrays.asList(adminData.getPowerSubscribers()));
             dateUpdateTextView.setText(adminData.getSubscriberListUpdateDate().toString());
 
             adapter.notifyDataSetChanged();
