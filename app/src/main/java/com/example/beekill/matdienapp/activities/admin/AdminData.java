@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * Created by beekill on 9/5/16.
  */
-public class AdminData implements Serializable
+class AdminData implements Serializable
 {
     private Date subscriberListUpdateDate;
     private String[] powerSubscribers;

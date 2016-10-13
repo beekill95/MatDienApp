@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
     {
         // produce an add subcriber message
         // temporarily method
-        String message = protocol.addSubscriberMessage(
+        /*String message = protocol.addSubscriberMessage(
                 UserInformation.getInstance().getInformationOf("admin")[1],
                 phoneNumber, "Power");
 
@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements DeviceCommunicati
         // grey out ui components
         signOutButton.setEnabled(false);
         addSubscriberButton.setEnabled(false);
-        phoneEditText.setEnabled(false);
+        phoneEditText.setEnabled(false);*/
     }
 
     @Override

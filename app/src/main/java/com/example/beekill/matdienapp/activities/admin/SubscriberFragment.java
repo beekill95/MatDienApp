@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,6 +89,34 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
                 }
         );*/
 
+        // add long click listener (delete a subscriber)
+        subscriberListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // TODO: get the phone number the admin want to delete from status
+                final String phoneNumber = "12345";
+                final String status = "Power";
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+                alertDialogBuilder
+                        .setMessage("Do you want to remove " + phoneNumber + " from " + status + "?")
+                        .setCancelable(true)
+                        .setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        sendDelSubscriber(phoneNumber, status);
+                                    }
+                                })
+                        .setNegativeButton(android.R.string.cancel, null);
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+                return false;
+            }
+        });
+
         refreshFloatingButton = (FloatingActionButton) view.findViewById(R.id.refreshFloatingButton);
         refreshFloatingButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -150,6 +179,17 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
             args.putString("subscriptionType", subscriptionType);
 
             mListener.onFragmentActionPerform(AdminAction.ADD_SUBSCRIBER, args);
+        }
+    }
+
+    private void sendDelSubscriber(String phoneNumber, String subscriptionType)
+    {
+        if (mListener != null) {
+            Bundle args = new Bundle();
+            args.putString("phoneNumber", phoneNumber);
+            args.putString("status", subscriptionType);
+
+            mListener.onFragmentActionPerform(AdminAction.DEL_SUBSCRIBER, args);
         }
     }
 
