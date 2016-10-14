@@ -20,4 +20,6 @@
     <string name="refresh">Refresh</string>
     <string name="change_password">Change Password</string>
     <string name="phone_number">Phone number</string>
+    <string name="title_activity_subscriber_action">SubscriberActionActivity</string>
+    <string name="update_status">Update Status</string>
 </resources>

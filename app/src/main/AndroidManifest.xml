@@ -42,17 +42,13 @@
 
         <activity
             android:name=".activities.NotificationActivity"
-            android:excludeFromRecents="true"/>
-
+            android:excludeFromRecents="true" />
         <activity
             android:name=".activities.admin.AdminActionActivity"
             android:label="@string/title_activity_admin_action"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity android:name=".activities.ChangePasswordActivity" />
-
         <activity android:name=".activities.devices.DevicesActivity" />
-
         <activity android:name=".qrreader.QRActivity" />
 
         <meta-data
@@ -61,9 +57,12 @@
 
         <activity
             android:name=".activities.AddDeviceDialog"
-            android:theme="@style/Theme.AppCompat.Light.Dialog"
             android:excludeFromRecents="true"
-            ></activity>
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".activities.subscriber.SubscriberActionActivity"
+            android:label="@string/title_activity_subscriber_action"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

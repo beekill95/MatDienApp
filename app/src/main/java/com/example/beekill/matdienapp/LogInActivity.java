@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.beekill.matdienapp.activities.admin.AdminActionActivity;
+import com.example.beekill.matdienapp.activities.subscriber.SubscriberActionActivity;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.hash.Hashing;
@@ -212,19 +213,18 @@ public class LogInActivity extends AppCompatActivity
         MatDienApplication app = (MatDienApplication) getApplication();
         app.storeConnection(bluetoothCommunication);
 
-        Log.i("MatDienApp", "User type in is: " + usernameEditText.getText().toString());
-
         // start admin activity or subscriber activity accordingly
         if (usernameEditText.getText().toString().equals("admin")) {
             Intent startAdminActivityIntent = new Intent(LogInActivity.this, AdminActionActivity.class);
 
-            startAdminActivityIntent.putExtra("deviceBluetoothAddress", deviceBluetoothAddress);
-            startAdminActivityIntent.putExtra("userPassword", userPassword);
-
+            putBluetoothAddressAndPassword(startAdminActivityIntent, deviceBluetoothAddress, userPassword);
             startActivity(startAdminActivityIntent);
         } else {
             // subscriber activity
+            Intent startSubscriberActivityIntent = new Intent(LogInActivity.this, SubscriberActionActivity.class);
 
+            putBluetoothAddressAndPassword(startSubscriberActivityIntent, deviceBluetoothAddress, userPassword);
+            startActivity(startSubscriberActivityIntent);
         }
 
         // store logged int state
@@ -237,5 +237,10 @@ public class LogInActivity extends AppCompatActivity
 
         // end this activity
         finish();
+    }
+
+    private static void putBluetoothAddressAndPassword(Intent intent, String bluetoothAddress, String userPassword) {
+        intent.putExtra("deviceBluetoothAddress", bluetoothAddress);
+        intent.putExtra("userPassword", userPassword);
     }
 }
