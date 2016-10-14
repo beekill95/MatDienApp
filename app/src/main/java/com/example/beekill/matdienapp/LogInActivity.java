@@ -182,7 +182,7 @@ public class LogInActivity extends AppCompatActivity
 
     @Override
     public void handle(String data, String fromAddress) {
-        SubscriberProtocol protocol = new Protocol();
+        SubscriberProtocol protocol = ((MatDienApplication) getApplication()).getSubscriberProtocol();
 
         if (fromAddress.equals(deviceBluetoothAddress)) {
             // only process data received from known device
@@ -233,7 +233,7 @@ public class LogInActivity extends AppCompatActivity
         editor.putBoolean(IS_LOGGED_IN_STR, true);
         editor.putString(USER_LOGGED_IN_STR, usernameEditText.getText().toString());
         editor.putString(USER_PASSWORD_STR, userPassword);
-        editor.commit();
+        editor.apply();
 
         // end this activity
         finish();

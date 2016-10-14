@@ -18,6 +18,7 @@ import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.communication.QueueManager;
+import com.example.beekill.matdienapp.protocol.SubscriberProtocol;
 
 import java.util.List;
 
@@ -34,6 +35,9 @@ public class SubscriberActionActivity extends AppCompatActivity
     private BluetoothCommunication communication;
     private CommunicationManager queueManager;
     private List<Pair<Integer, String>> pendingActions;
+
+    // subscriber protocol
+    private SubscriberProtocol protocol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,9 @@ public class SubscriberActionActivity extends AppCompatActivity
 
         queueManager = new QueueManager(this, communication);
         queueManager.setHandler(this);
+
+        // get reference to subscriber protocol
+        protocol = ((MatDienApplication) getApplication()).getSubscriberProtocol();
     }
 
     @Override

@@ -96,7 +96,7 @@ public class AdminActionActivity extends AppCompatActivity
         pendingActions = new ArrayList<>();
 
         // set up admin protocol
-        adminProtocol = new Protocol();
+        adminProtocol = ((MatDienApplication) getApplication()).getAdminProtocol();
 
         // get data for this activity
         if (savedInstanceState != null) {
