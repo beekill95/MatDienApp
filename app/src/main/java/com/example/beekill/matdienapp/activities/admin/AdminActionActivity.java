@@ -20,16 +20,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.beekill.matdienapp.LogInActivity;
-import com.example.beekill.matdienapp.MainActivity;
 import com.example.beekill.matdienapp.MatDienApplication;
 import com.example.beekill.matdienapp.R;
-import com.example.beekill.matdienapp.UserInformation;
 import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
 import com.example.beekill.matdienapp.hash.Hashing;
-import com.example.beekill.matdienapp.hash.HashingPBKDF2;
 import com.example.beekill.matdienapp.protocol.AdminProtocol;
 import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
@@ -608,7 +605,7 @@ public class AdminActionActivity extends AppCompatActivity
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("Failed")
-                    .setMessage("Cannot change password in device")
+                    .setMessage("Cannot change password on device")
                     .show();
         }
     }
@@ -624,7 +621,7 @@ public class AdminActionActivity extends AppCompatActivity
 
     @Override
     public void handleDeviceConnectionResult(boolean isConnected) {
-        // TODO: do something like disable gui or enable
+        /*
         if (isConnected) {
             Toast.makeText(this, "Connected", Toast.LENGTH_LONG).show();
 
@@ -632,12 +629,13 @@ public class AdminActionActivity extends AppCompatActivity
             //sendInitiationMessage();
         }
         else
-            Toast.makeText(this, "Cannot connect", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Cannot connect", Toast.LENGTH_LONG).show();*/
+
+        // do nothing
     }
 
     @Override
     public void handleDeviceConnectionLost() {
-        // TODO: do something about this
         Toast.makeText(this, "Connection lost", Toast.LENGTH_LONG).show();
     }
 }

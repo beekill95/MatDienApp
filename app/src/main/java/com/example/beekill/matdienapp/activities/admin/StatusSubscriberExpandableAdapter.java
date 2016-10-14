@@ -35,7 +35,10 @@ class StatusSubscriberExpandableAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return subscriberPhoneNumbers.get(statusHeader[groupPosition]).length;
+        if (subscriberPhoneNumbers.get(statusHeader[groupPosition]) == null)
+            return 0;
+        else
+            return subscriberPhoneNumbers.get(statusHeader[groupPosition]).length;
     }
 
     @Override
@@ -45,7 +48,10 @@ class StatusSubscriberExpandableAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return subscriberPhoneNumbers.get(statusHeader[groupPosition])[childPosition];
+        if (subscriberPhoneNumbers.get(statusHeader[groupPosition]) == null)
+            return "";
+        else
+            return subscriberPhoneNumbers.get(statusHeader[groupPosition])[childPosition];
     }
 
     @Override

@@ -13,15 +13,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
+import com.example.beekill.matdienapp.hash.Hashing;
 import com.example.beekill.matdienapp.protocol.SubscriptionType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,14 +43,18 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
     private FloatingActionButton refreshFloatingButton;
     private FloatingActionButton addSubscriberFloatingButton;
-    private Button refreshButton;
-    //private Button removeButton;
+
     private TextView dateUpdateTextView;
     private ListView subscriberListView;
-    ArrayList<String> listSubscriber;
-    ArrayAdapter<String> adapter;
+    //ArrayList<String> listSubscriber;
+    //ArrayAdapter<String> adapter;
 
-    private AdminData adminData;
+    private StatusSubscriberExpandableAdapter listAdapter;
+    private ExpandableListView listView;
+    private final String[] statuses = {
+            SubscriptionType.Power.getValue(), SubscriptionType.Camera.getValue(), SubscriptionType.Thief.getValue()
+    };
+    private HashMap<String, String[]> subscribersInStatus;
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,24 +84,14 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
         dateUpdateTextView = (TextView) view.findViewById(R.id.dataUpdateTextView);
 
         subscriberListView = (ListView) view.findViewById(R.id.subscriberListView);
-        listSubscriber = new ArrayList<>();
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listSubscriber);
-        subscriberListView.setAdapter(adapter);
-
-        /*refreshButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        sendGetSubscriberList();
-                    }
-                }
-        );*/
+        //listSubscriber = new ArrayList<>();
+        //adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listSubscriber);
+        //subscriberListView.setAdapter(adapter);
 
         // add long click listener (delete a subscriber)
-        subscriberListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*subscriberListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // TODO: get the phone number the admin want to delete from status
                 final String phoneNumber = "12345";
                 final String status = "Power";
 
@@ -115,7 +113,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
                 return false;
             }
-        });
+        });*/
 
         refreshFloatingButton = (FloatingActionButton) view.findViewById(R.id.refreshFloatingButton);
         refreshFloatingButton.setOnClickListener(
@@ -137,13 +135,47 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
                 }
         );
 
-        if (adminData.getSubscriberListUpdateDate() != null) {
+        /*if (adminData.getSubscriberListUpdateDate() != null) {
             listSubscriber.clear();
             listSubscriber.addAll(Arrays.asList(adminData.getPowerSubscribers()));
             dateUpdateTextView.setText(adminData.getSubscriberListUpdateDate().toString());
 
             adapter.notifyDataSetChanged();
-        }
+        }*/
+
+        // get the list view
+        listView = (ExpandableListView) view.findViewById(R.id.statusSubscriberExpandable);
+        subscribersInStatus = new HashMap<>();
+        getDataToDisplay(null);
+        listAdapter = new StatusSubscriberExpandableAdapter(getContext(), statuses, subscribersInStatus);
+
+        listView.setAdapter(listAdapter);
+
+        listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPostion, int childPosition, long id) {
+                final String subscriberToDelete = (String) listAdapter.getChild(groupPostion, childPosition);
+                final String status = (String) listAdapter.getGroup(groupPostion);
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+                alertDialogBuilder
+                        .setMessage("Do you want to remove " + subscriberToDelete + " from " + status + "?")
+                        .setCancelable(true)
+                        .setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        sendDelSubscriber(subscriberToDelete, status);
+                                    }
+                                })
+                        .setNegativeButton(android.R.string.cancel, null);
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+                return false;
+            }
+        });
 
         return view;
     }
@@ -248,6 +280,23 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
     private void displaySubscriberList(AdminData adminData)
     {
-        this.adminData = adminData;
+        getDataToDisplay(adminData);
+
+        listAdapter.notifyDataSetChanged();
+
+        String dateUpdate = adminData.getSubscriberListUpdateDate().toString();
+        dateUpdateTextView.setText(dateUpdate);
+    }
+
+    private void getDataToDisplay(AdminData adminData) {
+        if (adminData == null) {
+            subscribersInStatus.put(statuses[0], null);
+            subscribersInStatus.put(statuses[1], null);
+            subscribersInStatus.put(statuses[2], null);
+        } else {
+            subscribersInStatus.put(statuses[0], adminData.getPowerSubscribers());
+            subscribersInStatus.put(statuses[1], adminData.getCameraSubscribers());
+            subscribersInStatus.put(statuses[2], adminData.getThiefSubscribers());
+        }
     }
 }
