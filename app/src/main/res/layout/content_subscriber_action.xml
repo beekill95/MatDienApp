@@ -12,4 +12,12 @@
     tools:context="com.example.beekill.matdienapp.activities.subscriber.SubscriberActionActivity"
     tools:showIn="@layout/activity_subscriber_action">
 
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/statusSubscribedListView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true" />
 </RelativeLayout>

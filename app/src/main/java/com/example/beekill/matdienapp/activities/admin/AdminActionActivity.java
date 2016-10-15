@@ -184,13 +184,11 @@ public class AdminActionActivity extends AppCompatActivity
             Intent startChangePasswordActivityIntent = new Intent(this, ChangePasswordActivity.class);
 
             startActivityForResult(startChangePasswordActivityIntent, CHANGE_PASSWORD_REQUEST);
-            return true;
         } else if (id == R.id.action_sign_out) {
             signout();
-            return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     // Handle when we received the result from change password activity
