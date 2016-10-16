@@ -27,6 +27,7 @@ import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
 import com.example.beekill.matdienapp.hash.Hashing;
+import com.example.beekill.matdienapp.helper.ObjectSerializerHelper;
 import com.example.beekill.matdienapp.protocol.AdminProtocol;
 import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
@@ -226,7 +227,7 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void loadAdminData()
     {
-        try {
+        /*try {
             FileInputStream fin = openFileInput(DataFileName);
 
             // read the object
@@ -244,12 +245,21 @@ public class AdminActionActivity extends AppCompatActivity
             e.printStackTrace();
 
             adminData = new AdminData();
+        }*/
+
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+
+        if (sharedPreferences.contains(deviceBluetoothAddress)) {
+            String encodedAdminData = sharedPreferences.getString(deviceBluetoothAddress, null);
+            adminData = (AdminData) ObjectSerializerHelper.stringToObject(encodedAdminData);
+        } else {
+            adminData = new AdminData();
         }
     }
 
     private void saveAdminData()
     {
-        try {
+        /*try {
             FileOutputStream fout = openFileOutput(DataFileName, Context.MODE_PRIVATE);
 
             // write the object
@@ -261,7 +271,14 @@ public class AdminActionActivity extends AppCompatActivity
             fout.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+
+        String encodedAdminData = ObjectSerializerHelper.objectToString(adminData);
+
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(deviceBluetoothAddress, encodedAdminData);
+        editor.apply();
     }
 
     private void signout()
@@ -274,7 +291,7 @@ public class AdminActionActivity extends AppCompatActivity
         editor.putBoolean(LogInActivity.IS_LOGGED_IN_STR, false);
         editor.putString(LogInActivity.USER_LOGGED_IN_STR, "");
         editor.putString(LogInActivity.USER_PASSWORD_STR, "");
-        editor.commit();
+        editor.apply();
 
         // start main activity
         //Intent startMainActivityIntent = new Intent(this, MainActivity.class);
