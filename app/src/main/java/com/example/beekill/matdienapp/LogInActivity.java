@@ -166,6 +166,7 @@ public class LogInActivity extends AppCompatActivity
                 // we are currently logged in
                 String username = sharedPreferences.getString("userLoggedIn", "subscriber");
                 String password = sharedPreferences.getString("userPassword", "subscriber");
+                usernameEditText.setText(username);
 
                 login(username, password, false);
             }

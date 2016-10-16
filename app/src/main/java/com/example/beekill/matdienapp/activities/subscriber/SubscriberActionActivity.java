@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -61,6 +63,7 @@ public class SubscriberActionActivity extends AppCompatActivity
 
     // subscriber data
     private ArrayList<String> statusSubscribed;
+    private ArrayAdapter statusSubscribedAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +98,11 @@ public class SubscriberActionActivity extends AppCompatActivity
 
         pendingActions = new ArrayList<>();
         loadSubscriberData();
+
+        // display status this subscriber subscribe to
+        ListView listView = (ListView) findViewById(R.id.statusSubscribedListView);
+        statusSubscribedAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, statusSubscribed);
+        listView.setAdapter(statusSubscribedAdapter);
     }
 
     @Override
@@ -164,6 +172,20 @@ public class SubscriberActionActivity extends AppCompatActivity
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        // stop bluetooth
+        communication.terminateConnection();
+
+        // remove register
+        communication.unregisterBluetoothStatusHandler(this);
+
+        // remove queue manager
+        queueManager.removeHandler(this, this);
+
+        super.onDestroy();
+    }
+
     private void queryDeviceStatus() {
 
     }
@@ -218,7 +240,7 @@ public class SubscriberActionActivity extends AppCompatActivity
 
     private void sendSubscribeCommand(String status, String thisPhoneNumber) {
         this.thisPhoneNumber = thisPhoneNumber;
-        String message = protocol.addSubscription(status, subscriberPassword);
+        String message = protocol.addSubscription(status, thisPhoneNumber);
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(SubscriberAction.SUBSCRIBE, status)));
@@ -229,6 +251,7 @@ public class SubscriberActionActivity extends AppCompatActivity
 
         if (resp.getResult()) {
             statusSubscribed.add(status);
+            statusSubscribedAdapter.notifyDataSetChanged();
         }
 
         Toast.makeText(this, resp.getDescription(), Toast.LENGTH_LONG).show();

@@ -286,6 +286,9 @@ public class AdminActionActivity extends AppCompatActivity
         // modify shared preferences
         LogInActivity.signout(this);
 
+        // save admin data
+        saveAdminData();
+
         // start main activity
         //Intent startMainActivityIntent = new Intent(this, MainActivity.class);
         //startActivity(startMainActivityIntent);
@@ -322,14 +325,14 @@ public class AdminActionActivity extends AppCompatActivity
             // Return a PlaceholderFragment (defined as a static inner class below).
             if (position == 0) {
                 SubscriberFragment subscriberFragment = SubscriberFragment.newInstance();
-                subscriberFragment.displayData(adminData);
                 subscriberFragmentHandler = subscriberFragment;
+                subscriberFragment.displayData(adminData);
 
                 return subscriberFragment;
             } else if (position == 1) {
                 PhoneAccountFragment phoneAccountFragment = PhoneAccountFragment.newInstance();
-                phoneAccountFragment.displayData(adminData);
                 phoneAccountFragmentHandler = phoneAccountFragment;
+                phoneAccountFragment.displayData(adminData);
 
                 return phoneAccountFragment;
             } else
@@ -444,7 +447,8 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendListSubscriberMessage(Bundle args)
     {
-        String message = adminProtocol.getSubscriberListMessage(adminPassword);
+        String message = adminProtocol.getSubscriberListMessage(SubscriptionType.Power.getValue());
+        args.putString("status", SubscriptionType.Power.getValue());
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.LIST_SUBSCRIBER, args)));
@@ -507,7 +511,7 @@ public class AdminActionActivity extends AppCompatActivity
         if (response.getResult()) {
             // successful
             String phoneNumber = args.getString("phoneNumber");
-            String subscriptionType = args.getString("subscriptionType");
+            String subscriptionType = args.getString("status");
 
             if (SubscriptionType.Power.getValue().equals(subscriptionType))
                 adminData.removePowerSubscriber(phoneNumber);
@@ -523,7 +527,7 @@ public class AdminActionActivity extends AppCompatActivity
         }
 
         Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
-        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.DEL_SUBSCRIBER);
+        subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.DEL_SUBSCRIBER);
     }
 
     private void handleReceivedAddSubscriber(String message, Bundle args)
@@ -549,7 +553,7 @@ public class AdminActionActivity extends AppCompatActivity
         }
 
         Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
-        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.ADD_SUBSCRIBER);
+        subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.ADD_SUBSCRIBER);
     }
 
     private void handleReceivedDeviceAccount(String message, Bundle args)

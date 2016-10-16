@@ -56,10 +56,13 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
     };
     private HashMap<String, String[]> subscribersInStatus;
 
+    private AdminData adminData;
+
     private OnFragmentInteractionListener mListener;
 
     public SubscriberFragment() {
         // Required empty public constructor
+        subscribersInStatus = new HashMap<>();
     }
 
     public static SubscriberFragment newInstance() {
@@ -145,8 +148,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
         // get the list view
         listView = (ExpandableListView) view.findViewById(R.id.statusSubscriberExpandable);
-        subscribersInStatus = new HashMap<>();
-        getDataToDisplay(null);
+        getDataToDisplay(adminData);
         listAdapter = new StatusSubscriberExpandableAdapter(getContext(), statuses, subscribersInStatus);
 
         listView.setAdapter(listAdapter);
@@ -199,8 +201,9 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
     private void sendGetSubscriberList()
     {
-        if (mListener != null)
-            mListener.onFragmentActionPerform(AdminAction.LIST_SUBSCRIBER, null);
+        if (mListener != null) {
+            mListener.onFragmentActionPerform(AdminAction.LIST_SUBSCRIBER, new Bundle());
+        }
     }
 
     private void sendAddSubscriber(String phoneNumber, String subscriptionType)
@@ -275,7 +278,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
     @Override
     public void displayData(AdminData adminData)
     {
-        displaySubscriberList(adminData);
+        this.adminData = adminData;
     }
 
     private void displaySubscriberList(AdminData adminData)
@@ -284,8 +287,10 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
 
         listAdapter.notifyDataSetChanged();
 
-        String dateUpdate = adminData.getSubscriberListUpdateDate().toString();
-        dateUpdateTextView.setText(dateUpdate);
+        if (adminData != null) {
+            String dateUpdate = adminData.getSubscriberListUpdateDate().toString();
+            dateUpdateTextView.setText(dateUpdate);
+        }
     }
 
     private void getDataToDisplay(AdminData adminData) {
