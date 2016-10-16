@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.beekill.matdienapp.LogInActivity;
 import com.example.beekill.matdienapp.MatDienApplication;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
@@ -155,12 +156,24 @@ public class SubscriberActionActivity extends AppCompatActivity
         pendingActions.remove(actionPair);
     }
 
+    @Override
+    protected void onPause() {
+        // save subscriber data
+        saveSubscriberData();
+
+        super.onPause();
+    }
+
     private void queryDeviceStatus() {
 
     }
 
     private void signout() {
+        // sign out
+        LogInActivity.signout(this);
 
+        // finish this activity
+        finish();
     }
 
     private void showSubscribeStatusDialogForResult() {

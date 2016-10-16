@@ -5,6 +5,7 @@ package com.example.beekill.matdienapp;
  * Log In activity
  */
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -242,5 +243,16 @@ public class LogInActivity extends AppCompatActivity
     private static void putBluetoothAddressAndPassword(Intent intent, String bluetoothAddress, String userPassword) {
         intent.putExtra("deviceBluetoothAddress", bluetoothAddress);
         intent.putExtra("userPassword", userPassword);
+    }
+
+    public static void signout(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
+                context.getApplicationContext()
+        );
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(LogInActivity.IS_LOGGED_IN_STR, false);
+        editor.putString(LogInActivity.USER_LOGGED_IN_STR, "");
+        editor.putString(LogInActivity.USER_PASSWORD_STR, "");
+        editor.apply();
     }
 }
