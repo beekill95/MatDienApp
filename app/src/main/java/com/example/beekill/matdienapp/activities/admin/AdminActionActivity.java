@@ -409,28 +409,6 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendChangePasswordMessage(Bundle args)
     {
-        /*String oldPass = args.getString("oldPass");
-        String newPass = args.getString("newPass");
-        Hashing hashing = new HashingPBKDF2();
-
-        // hash the old pass
-        String oldPassSalt = UserInformation.getInstance().getInformationOf("admin")[0];
-        oldPass = hashing.hash(oldPass, oldPassSalt);
-
-        // hash the new pass
-        String newPassHashed[] = new String[2];
-        hashing.hash(newPass, newPassHashed);
-
-        String message = adminProtocol.changeAdminPasswordMessage("admin", oldPass, newPassHashed[1]);
-
-        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
-
-        // put everything to args
-        args.putString("oldPass", oldPass);
-        args.putString("newPassSalt", newPassHashed[0]);
-        args.putString("newPass", newPassHashed[1]);
-
-        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.CHANGE_PASSWORD, args)));*/
         // TODO: change to using md5
         // TODO: using the given password
     }
