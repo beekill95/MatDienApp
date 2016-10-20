@@ -289,9 +289,7 @@ public class AdminActionActivity extends AppCompatActivity
         // save admin data
         saveAdminData();
 
-        // start main activity
-        //Intent startMainActivityIntent = new Intent(this, MainActivity.class);
-        //startActivity(startMainActivityIntent);
+        // TODO: do something here
         finish();
     }
 
