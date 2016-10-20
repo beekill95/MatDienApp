@@ -1,5 +1,6 @@
 package com.example.beekill.matdienapp.activities.devices;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,17 +9,25 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.beekill.matdienapp.DeviceInformation;
+import com.example.beekill.matdienapp.RecognizedDevices;
 import com.example.beekill.matdienapp.activities.LogInActivity;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.AddDeviceDialog;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class DevicesActivity extends AppCompatActivity {
 
     private final static int ADD_DEVICE_REQUEST = 1;
+    private static final String DEVICES_DATA_FILE = "devices.data";
 
-    private ArrayList<DeviceInformation> deviceInformations;
+    private RecognizedDevices devices;
     GridView gridView;
     DevicesAdapter adapter;
 
@@ -28,25 +37,23 @@ public class DevicesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_devices);
 
         // load devices information
-        deviceInformations = new ArrayList<>();
-        deviceInformations.add(new DeviceInformation("bluetoothAddress1", "phoneNum1"));
-        deviceInformations.add(new DeviceInformation("bluetoothAddress2", "phoneNum2"));
+        loadDevices();
 
         // display grid view
         gridView = (GridView) findViewById(R.id.gridView);
-        adapter = new DevicesAdapter(this, deviceInformations);
+        adapter = new DevicesAdapter(this, devices.getDevices());
         gridView.setAdapter(adapter);
 
         gridView.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        if (i == deviceInformations.size()) {
+                        if (i == devices.numOfDevices()) {
                             // users press add new device item
                             startAddDeviceDialog();
                         } else {
                             // users touch a device
-                            logInDevice(deviceInformations.get(i));
+                            logInDevice(devices.getDevice(i));
                         }
                     }
                 }
@@ -91,8 +98,7 @@ public class DevicesActivity extends AppCompatActivity {
     }
 
     private void addNewDevice(String bluetoothAddress, String phoneNumber) {
-        DeviceInformation info = new DeviceInformation(bluetoothAddress, phoneNumber);
-        deviceInformations.add(info);
+        devices.addNewDevice(bluetoothAddress, phoneNumber);
 
         adapter.notifyDataSetChanged();
         gridView.invalidateViews();
@@ -116,5 +122,40 @@ public class DevicesActivity extends AppCompatActivity {
 
             addNewDevice(bluetoothAddress, phoneNumber);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        saveDevices();
+
+        super.onPause();
+    }
+
+    private void saveDevices() {
+        try {
+            FileOutputStream fos = openFileOutput(DEVICES_DATA_FILE, Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
+            objectOutputStream.writeObject(devices);
+
+            objectOutputStream.close();
+            fos.close();
+        } catch (IOException e) { }
+    }
+
+    private void loadDevices() {
+        try {
+            FileInputStream fin = openFileInput(DEVICES_DATA_FILE);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fin);
+
+            devices = (RecognizedDevices) objectInputStream.readObject();
+
+            objectInputStream.close();
+            fin.close();
+        } catch (FileNotFoundException e) {
+            // no file found
+            devices = new RecognizedDevices();
+            devices.addNewDevice("something cool", "12345");
+        } catch (IOException e) { }
+        catch (ClassNotFoundException e) { }
     }
 }

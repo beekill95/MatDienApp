@@ -1,6 +1,7 @@
 package com.example.beekill.matdienapp.activities.devices;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,8 +54,6 @@ public class DevicesAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         if (i < devices.size()) {
-            // devices information
-            // get device information
             DeviceInformation deviceInfo = devices.get(i);
 
             if (view == null || (dataChanged && i == devices.size() - 1)) {

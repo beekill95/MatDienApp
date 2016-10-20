@@ -32,4 +32,12 @@ public class RecognizedDevices implements Serializable {
 
         return devices.remove(index);
     }
+
+    public ArrayList<DeviceInformation> getDevices() {
+        return devices;
+    }
+
+    public int numOfDevices() {
+        return devices.size();
+    }
 }
