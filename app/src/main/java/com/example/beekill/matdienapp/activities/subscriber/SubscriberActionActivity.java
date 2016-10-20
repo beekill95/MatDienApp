@@ -5,9 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,24 +16,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.beekill.matdienapp.LogInActivity;
+import com.example.beekill.matdienapp.activities.LogInActivity;
 import com.example.beekill.matdienapp.MatDienApplication;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
-import com.example.beekill.matdienapp.communication.DeviceCommunication;
 import com.example.beekill.matdienapp.communication.QueueManager;
 import com.example.beekill.matdienapp.helper.ObjectSerializerHelper;
 import com.example.beekill.matdienapp.protocol.Response;
 import com.example.beekill.matdienapp.protocol.SubscriberProtocol;
 import com.example.beekill.matdienapp.protocol.SubscriptionType;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 

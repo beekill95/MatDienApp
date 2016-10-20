@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp;
+package com.example.beekill.matdienapp.activities;
 
 /**
  * Created by beekill on 7/19/16.
@@ -11,12 +11,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.beekill.matdienapp.MatDienApplication;
+import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.admin.AdminActionActivity;
 import com.example.beekill.matdienapp.activities.subscriber.SubscriberActionActivity;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;

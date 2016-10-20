@@ -3,7 +3,6 @@ package com.example.beekill.matdienapp.activities.admin;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
@@ -19,25 +18,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.beekill.matdienapp.LogInActivity;
+import com.example.beekill.matdienapp.activities.LogInActivity;
 import com.example.beekill.matdienapp.MatDienApplication;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
-import com.example.beekill.matdienapp.hash.Hashing;
 import com.example.beekill.matdienapp.helper.ObjectSerializerHelper;
 import com.example.beekill.matdienapp.protocol.AdminProtocol;
-import com.example.beekill.matdienapp.protocol.Protocol;
 import com.example.beekill.matdienapp.protocol.Response;
 import com.example.beekill.matdienapp.protocol.SubscriptionType;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 

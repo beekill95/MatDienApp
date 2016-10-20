@@ -1,20 +1,14 @@
 package com.example.beekill.matdienapp.activities.devices;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.example.beekill.matdienapp.DeviceInformation;
-import com.example.beekill.matdienapp.LogInActivity;
+import com.example.beekill.matdienapp.activities.LogInActivity;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.AddDeviceDialog;
 
