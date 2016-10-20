@@ -48,7 +48,7 @@
             android:label="@string/title_activity_admin_action"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.ChangePasswordActivity" />
-        <activity android:name=".qrreader.QRActivity" />
+        <activity android:name=".activities.qrreader.QRActivity" />
 
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"

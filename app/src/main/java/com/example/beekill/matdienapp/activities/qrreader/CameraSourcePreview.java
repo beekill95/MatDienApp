@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp.qrreader;
+package com.example.beekill.matdienapp.activities.qrreader;
 
 /*
  * Copyright (C) The Android Open Source Project

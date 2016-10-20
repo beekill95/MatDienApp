@@ -7,10 +7,9 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.beekill.matdienapp.R;
-import com.example.beekill.matdienapp.qrreader.QRActivity;
+import com.example.beekill.matdienapp.activities.qrreader.QRActivity;
 
 public class AddDeviceDialog extends AppCompatActivity {
 

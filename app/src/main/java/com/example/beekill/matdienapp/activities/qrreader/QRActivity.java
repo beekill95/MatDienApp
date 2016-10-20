@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp.qrreader;
+package com.example.beekill.matdienapp.activities.qrreader;
 
 /**
  * Copied from Gnzlt/AndroidVisionQRReader: https://github.com/Gnzlt/AndroidVisionQRReader

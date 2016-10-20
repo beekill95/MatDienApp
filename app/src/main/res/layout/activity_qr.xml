@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    tools:context=".qrreader.QRActivity">
+    tools:context=".activities.qrreader.QRActivity">
 
-    <com.example.beekill.matdienapp.qrreader.CameraSourcePreview
+    <com.example.beekill.matdienapp.activities.qrreader.CameraSourcePreview
         android:id="@+id/cameraSourcePreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
