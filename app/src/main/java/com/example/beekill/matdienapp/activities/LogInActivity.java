@@ -130,15 +130,15 @@ public class LogInActivity extends AppCompatActivity
         return false;
     }
 
-    private void login(String username, final String password, boolean shouldBeEncrypt)
+    private void login(String username, final String password, boolean shouldBeHash)
     {
-        if (!shouldBeEncrypt)
-            userPassword = password;
+        if (shouldBeHash)
+            userPassword = hashPassword("", password);
         else
             userPassword = password;
 
         // Compose message to send
-        SubscriberProtocol protocol = new Protocol();
+        SubscriberProtocol protocol = ((MatDienApplication) getApplication()).getSubscriberProtocol();
         String message = protocol.sessionInitialization(username, userPassword);
 
         // send message
@@ -151,7 +151,7 @@ public class LogInActivity extends AppCompatActivity
 
     private String hashPassword(String salt, String password)
     {
-        Hashing hashing = new HashingPBKDF2();
+        Hashing hashing = ((MatDienApplication) getApplication()).getHashing();
         return hashing.hash(password, salt);
     }
 
