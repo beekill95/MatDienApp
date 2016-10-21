@@ -4,14 +4,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="5dp"
     android:id="@+id/fragment_device_info">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:id="@+id/deviceNameTextView" />
+        android:id="@+id/deviceNameTextView"
+        android:gravity="center" />
 
     <TextView
         android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.DeviceInformation;
@@ -57,6 +58,7 @@ public class DevicesAdapter extends BaseAdapter {
             if (view == null || view.getId() != R.id.fragment_device_info) {
                 LayoutInflater layoutInflater = LayoutInflater.from(context);
                 view = layoutInflater.inflate(R.layout.fragment_device_info, null);
+                setViewLayoutParams(view);
             }
 
             TextView deviceNameTextView = (TextView) view.findViewById(R.id.deviceNameTextView);
@@ -73,6 +75,7 @@ public class DevicesAdapter extends BaseAdapter {
             if (view == null || view.getId() != R.id.fragment_add_device) {
                 LayoutInflater layoutInflater = LayoutInflater.from(context);
                 view = layoutInflater.inflate(R.layout.fragment_add_device, null);
+                setViewLayoutParams(view);
             }
 
             ImageView addIconImageView = (ImageView) view.findViewById(R.id.addIconImageView);
@@ -80,5 +83,12 @@ public class DevicesAdapter extends BaseAdapter {
 
             return view;
         }
+    }
+
+    private void setViewLayoutParams(View view) {
+        view.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                (int) context.getResources().getDimension(R.dimen.deviceItemHeight)
+        ));
     }
 }
