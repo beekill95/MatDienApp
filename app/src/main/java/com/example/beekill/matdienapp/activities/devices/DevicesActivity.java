@@ -1,7 +1,9 @@
 package com.example.beekill.matdienapp.activities.devices;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -58,6 +60,19 @@ public class DevicesActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        gridView.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        if (i < devices.numOfDevices()) {
+                            deleteDevice(i);
+                        }
+
+                        return true;
+                    }
+                }
+        );
     }
 
     private void startAddDeviceDialog() {
@@ -110,6 +125,27 @@ public class DevicesActivity extends AppCompatActivity {
         Intent logInDeviceIntent = new Intent(this, LogInActivity.class);
         logInDeviceIntent.putExtra("bluetoothAddress", bluetoothAddress);
         startActivity(logInDeviceIntent);
+    }
+
+    private void deleteDevice(int i) {
+        final int deviceIndex = i;
+        DeviceInformation info = devices.getDevice(i);
+
+        // ask for confirmation
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder
+                .setMessage("Do you want to delete device " + info.getBluetoothAddress())
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // actually delete device
+                                devices.removeDevice(deviceIndex);
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                .show();
     }
 
     @Override

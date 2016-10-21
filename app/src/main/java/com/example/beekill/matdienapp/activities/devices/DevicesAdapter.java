@@ -22,7 +22,6 @@ public class DevicesAdapter extends BaseAdapter {
 
     private ArrayList<DeviceInformation> devices;
     private Context context;
-    private boolean dataChanged = false;
 
     public DevicesAdapter(Context context, ArrayList<DeviceInformation> devices) {
 
@@ -47,7 +46,6 @@ public class DevicesAdapter extends BaseAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-        dataChanged = true;
         super.notifyDataSetChanged();
     }
 
@@ -56,10 +54,9 @@ public class DevicesAdapter extends BaseAdapter {
         if (i < devices.size()) {
             DeviceInformation deviceInfo = devices.get(i);
 
-            if (view == null || (dataChanged && i == devices.size() - 1)) {
+            if (view == null || view.getId() != R.id.fragment_device_info) {
                 LayoutInflater layoutInflater = LayoutInflater.from(context);
                 view = layoutInflater.inflate(R.layout.fragment_device_info, null);
-                dataChanged = false;
             }
 
             TextView deviceNameTextView = (TextView) view.findViewById(R.id.deviceNameTextView);
@@ -73,7 +70,7 @@ public class DevicesAdapter extends BaseAdapter {
             return view;
         } else {
             // add icon
-            if (view == null) {
+            if (view == null || view.getId() != R.id.fragment_add_device) {
                 LayoutInflater layoutInflater = LayoutInflater.from(context);
                 view = layoutInflater.inflate(R.layout.fragment_add_device, null);
             }
