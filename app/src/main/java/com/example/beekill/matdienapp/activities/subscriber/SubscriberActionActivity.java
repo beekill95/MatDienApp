@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -98,6 +99,30 @@ public class SubscriberActionActivity extends AppCompatActivity
         ListView listView = (ListView) findViewById(R.id.statusSubscribedListView);
         statusSubscribedAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, statusSubscribed);
         listView.setAdapter(statusSubscribedAdapter);
+
+        // add unsubscribe command
+        listView.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        final int statusIndexToDelete = i;
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(SubscriberActionActivity.this);
+
+                        alertDialogBuilder
+                                .setMessage("Do you want to unsubscribe from " + statusSubscribed.get(statusIndexToDelete) + " ?")
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int c) {
+                                        deleteStatus(statusIndexToDelete);
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+
+                        return true;
+                    }
+                }
+        );
     }
 
     @Override
@@ -277,5 +302,11 @@ public class SubscriberActionActivity extends AppCompatActivity
             thisPhoneNumber = "";
             statusSubscribed = new ArrayList<>();
         }
+    }
+
+    private void deleteStatus(int statusIndex) {
+        statusSubscribed.remove(statusIndex);
+
+        statusSubscribedAdapter.notifyDataSetChanged();
     }
 }
