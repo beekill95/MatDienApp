@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -98,6 +99,31 @@ public class SubscriberActionActivity extends AppCompatActivity
         ListView listView = (ListView) findViewById(R.id.statusSubscribedListView);
         statusSubscribedAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, statusSubscribed);
         listView.setAdapter(statusSubscribedAdapter);
+
+        // add unsubscribe command
+        listView.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        final int statusIndexToDelete = i;
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(SubscriberActionActivity.this);
+
+                        alertDialogBuilder
+                                .setMessage("Do you want to unsubscribe from " + statusSubscribed.get(statusIndexToDelete) + " ?")
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int c) {
+                                        String statusToUnsubscribe = statusSubscribed.get(statusIndexToDelete);
+                                        sendUnsubscribeCommand(statusToUnsubscribe, thisPhoneNumber);
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+
+                        return true;
+                    }
+                }
+        );
     }
 
     @Override
@@ -150,6 +176,7 @@ public class SubscriberActionActivity extends AppCompatActivity
                 handleReceivedSubscribeCommandResult(message, actionPair.second.second);
                 break;
             case UNSUBSCRIBE:
+                handleReceivedUnsubscribedCommandResult(message, actionPair.second.second);
                 break;
             case UPDATE_STATUS:
                 break;
@@ -241,7 +268,26 @@ public class SubscriberActionActivity extends AppCompatActivity
         pendingActions.add(Pair.create(messageId, Pair.create(SubscriberAction.SUBSCRIBE, status)));
     }
 
+    private void sendUnsubscribeCommand(String status, String thisPhoneNumber) {
+        this.thisPhoneNumber = thisPhoneNumber;
+        String message = protocol.removeSubscription(status, thisPhoneNumber);
+
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(SubscriberAction.UNSUBSCRIBE, status)));
+    }
+
     private void handleReceivedSubscribeCommandResult(String response, String status) {
+        Response resp = protocol.getResponse(response);
+
+        if (resp.getResult()) {
+            statusSubscribed.remove(status);
+            statusSubscribedAdapter.notifyDataSetChanged();
+        }
+
+        Toast.makeText(this, resp.getDescription(), Toast.LENGTH_LONG).show();
+    }
+
+    private void handleReceivedUnsubscribedCommandResult(String response, String status) {
         Response resp = protocol.getResponse(response);
 
         if (resp.getResult()) {
