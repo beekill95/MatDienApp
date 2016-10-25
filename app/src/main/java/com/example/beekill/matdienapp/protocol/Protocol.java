@@ -23,7 +23,7 @@ public class Protocol
         public static final String STATUS_FIELD_STRING = "status";
         public  static final String PHONE_NUMBER_FIELD_STRING = "phone";
         public static final String RECHARGE_CREDIT_CODE_FIELD_STRING = "code";
-        public static final String STATUS_VALUE_FIELD_STRING = "values";
+        public static final String STATUS_VALUE_FIELD_STRING = "val";
 
         public static final String RESULT_FIELD_STRING = "result";
         public static final String DESCRIPTION_FIELD_STRING = "desc";
@@ -40,7 +40,7 @@ public class Protocol
         public static final String ADD_SUBSCRIBER_ACTION_STRING = "AddSubscriber";
         public static final String CHECK_PHONE_ACCOUNT_ACTION_STRING = "CheckPhoneAcc";
         public static final String REFILL_PHONE_ACCOUNT_ACTION_STRING = "RefillPhoneAcc";
-        public static final String UPDATE_STATUS_ACTION_STRING = "UpdateStatus";
+        public static final String UPDATE_STATUS_ACTION_STRING = "Update";
         public static final String SESSION_INITIATION_ACTION_STRING = "SessionInitiation";
 
         public static final String SUBSCRIBE_ACTION_STRING = "Subscribe";
@@ -304,6 +304,25 @@ public class Protocol
             e.printStackTrace();
         } finally {
             return message.toString();
+        }
+    }
+
+    @Override
+    public boolean getNotification(String message, Notification notification) {
+        boolean success = false;
+        try {
+            JSONObject response = new JSONObject(message);
+
+            success = response.getBoolean(ProtocolString.RESULT_FIELD_STRING);
+
+            JSONObject noti = response.getJSONObject(ProtocolString.STATUS_VALUE_FIELD_STRING);
+            notification.setCameraOn(noti.getBoolean(SubscriptionType.Camera.getValue()));
+            notification.setPowerOn(noti.getBoolean(SubscriptionType.Power.getValue()));
+            notification.setHaveTheif(noti.getBoolean(SubscriptionType.Thief.getValue()));
+        } catch(JSONException e) {
+            e.printStackTrace();
+        } finally {
+            return success;
         }
     }
 }
