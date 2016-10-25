@@ -267,12 +267,12 @@ public class Protocol
     }
 
     @Override
-    public String removeSubscription(String subscriptionType, String subscriberPass) {
+    public String removeSubscription(String subscriptionType, String phoneNumber) {
         JSONObject message = new JSONObject();
         try {
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.UNSUBSCRIBE_ACTION_STRING);
             message.accumulate(ProtocolString.STATUS_FIELD_STRING, subscriptionType);
-            message.accumulate(ProtocolString.PASS_FIELD_STRING, subscriberPass);
+            message.accumulate(ProtocolString.PHONE_NUMBER_FIELD_STRING, phoneNumber);
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {

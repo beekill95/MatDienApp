@@ -5,6 +5,6 @@ package com.example.beekill.matdienapp.protocol;
  */
 public interface SubscriberProtocol extends ResponseProtocol {
     String addSubscription(String subscriptionType, String phoneNumber);
-    String removeSubscription(String subscriptionType, String subscriberPass);
+    String removeSubscription(String subscriptionType, String phoneNumber);
     String sessionInitialization(String user, String password);
 }
