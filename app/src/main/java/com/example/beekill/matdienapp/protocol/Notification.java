@@ -11,6 +11,12 @@ public class Notification implements Parcelable {
     private boolean cameraOn;
     private boolean haveTheif;
 
+    public Notification() {
+        powerOn = false;
+        cameraOn = false;
+        haveTheif = false;
+    }
+
     public Notification(boolean powerOn, boolean cameraOn, boolean haveTheif)
     {
         this.powerOn = powerOn;
@@ -37,6 +43,18 @@ public class Notification implements Parcelable {
         powerOn = values[0];
         cameraOn = values[1];
         haveTheif = values[2];
+    }
+
+    public void setPowerOn(boolean powerOn) {
+        this.powerOn = powerOn;
+    }
+
+    public void setCameraOn(boolean cameraOn) {
+        this.cameraOn = cameraOn;
+    }
+
+    public void setHaveTheif(boolean haveTheif) {
+        this.haveTheif = haveTheif;
     }
 
     @Override

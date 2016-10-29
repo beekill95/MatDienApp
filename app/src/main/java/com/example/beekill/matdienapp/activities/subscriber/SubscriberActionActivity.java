@@ -10,6 +10,7 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
 import com.example.beekill.matdienapp.helper.ObjectSerializerHelper;
+import com.example.beekill.matdienapp.protocol.Notification;
 import com.example.beekill.matdienapp.protocol.Response;
 import com.example.beekill.matdienapp.protocol.SubscriberProtocol;
 import com.example.beekill.matdienapp.protocol.SubscriptionType;
@@ -137,7 +139,7 @@ public class SubscriberActionActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_update_status) {
-            queryDeviceStatus();
+            updateDeviceStatus();
         } else if (id == R.id.action_sign_out) {
             signout();
         }
@@ -179,6 +181,7 @@ public class SubscriberActionActivity extends AppCompatActivity
                 handleReceivedUnsubscribedCommandResult(message, actionPair.second.second);
                 break;
             case UPDATE_STATUS:
+                handleReceivedDeviceStatus(message, actionPair.second.second);
                 break;
         }
 
@@ -206,10 +209,6 @@ public class SubscriberActionActivity extends AppCompatActivity
         queueManager.removeHandler(this, this);
 
         super.onDestroy();
-    }
-
-    private void queryDeviceStatus() {
-
     }
 
     private void signout() {
@@ -276,6 +275,13 @@ public class SubscriberActionActivity extends AppCompatActivity
         pendingActions.add(Pair.create(messageId, Pair.create(SubscriberAction.UNSUBSCRIBE, status)));
     }
 
+    private void updateDeviceStatus() {
+        String message = protocol.notificationMessage(subscriberPassword);
+
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(SubscriberAction.UPDATE_STATUS, "")));
+    }
+
     private void handleReceivedSubscribeCommandResult(String response, String status) {
         Response resp = protocol.getResponse(response);
 
@@ -296,6 +302,30 @@ public class SubscriberActionActivity extends AppCompatActivity
         }
 
         Toast.makeText(this, resp.getDescription(), Toast.LENGTH_LONG).show();
+    }
+
+    private void handleReceivedDeviceStatus(String response, String status) {
+        Notification notification = new Notification();
+        boolean success = protocol.getNotification(response, notification);
+
+        if (success) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(SubscriptionType.Power.getValue() + ": ");
+            stringBuilder.append(notification.isPowerOn());
+            stringBuilder.append("\n" + SubscriptionType.Camera.getValue() + ": ");
+            stringBuilder.append(notification.isCameraOn());
+            stringBuilder.append("\n" + SubscriptionType.Thief.getValue() + ": ");
+            stringBuilder.append(notification.isHaveTheif());
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder
+                    .setMessage(stringBuilder.toString())
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        } else {
+            Log.i("MatDienApp", response);
+            Log.i("MatDienApp", "Cannot parse device's response");
+        }
     }
 
     private static final String STATUS_SUBSCRIBEB_STR = "statusSubscribed";
