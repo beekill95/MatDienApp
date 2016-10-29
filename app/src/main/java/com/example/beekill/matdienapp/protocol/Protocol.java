@@ -313,7 +313,12 @@ public class Protocol
         try {
             JSONObject response = new JSONObject(message);
 
-            success = response.getBoolean(ProtocolString.RESULT_FIELD_STRING);
+            // get result
+            String result = response.getString(ProtocolString.RESULT_FIELD_STRING);
+            if (result.equals(ProtocolString.RESULT_SUCCESS_STRING))
+                success = true;
+            else
+                success = false;
 
             JSONObject noti = response.getJSONObject(ProtocolString.STATUS_VALUE_FIELD_STRING);
             notification.setCameraOn(noti.getBoolean(SubscriptionType.Camera.getValue()));
