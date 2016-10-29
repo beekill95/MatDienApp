@@ -34,7 +34,7 @@ public class LogInActivity extends AppCompatActivity
 {
     private static final int ENABLE_BLUETOOTH_REQUEST = 1;
     private static final String[] defaultPasswords = {
-            "admin", "subscriber"
+            "admin", ""
     };
     public static final String IS_LOGGED_IN_STR = "isLoggedIn";
     public static final String USER_LOGGED_IN_STR = "userLoggedIn";

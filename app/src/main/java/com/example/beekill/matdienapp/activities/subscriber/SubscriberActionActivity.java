@@ -280,7 +280,7 @@ public class SubscriberActionActivity extends AppCompatActivity
         Response resp = protocol.getResponse(response);
 
         if (resp.getResult()) {
-            statusSubscribed.remove(status);
+            statusSubscribed.add(status);
             statusSubscribedAdapter.notifyDataSetChanged();
         }
 
@@ -291,7 +291,7 @@ public class SubscriberActionActivity extends AppCompatActivity
         Response resp = protocol.getResponse(response);
 
         if (resp.getResult()) {
-            statusSubscribed.add(status);
+            statusSubscribed.remove(status);
             statusSubscribedAdapter.notifyDataSetChanged();
         }
 
