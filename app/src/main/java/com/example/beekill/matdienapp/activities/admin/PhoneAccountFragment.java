@@ -3,11 +3,13 @@ package com.example.beekill.matdienapp.activities.admin;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.beekill.matdienapp.R;
 
@@ -31,7 +33,6 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
 
     private TextView deviceCreditTextView;
     private TextView updatedDateTextView;
-    private TextView refillCodeTextView;
 
     // Not a very good solution
     // will try to refactor this
@@ -66,7 +67,6 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
 
         deviceCreditTextView = (TextView) view.findViewById(R.id.deviceCreditTextView);
         updatedDateTextView = (TextView) view.findViewById(R.id.updatedDateTextView);
-        refillCodeTextView = (TextView) view.findViewById(R.id.refillCodeTextView);
 
         // register callbacks
         refreshButton.setOnClickListener(
@@ -82,7 +82,7 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        sendRefillDeviceCredit();
+                        showRefillAccountDialog();
                     }
                 }
         );
@@ -102,16 +102,14 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
         }
     }
 
+    private void showRefillAccountDialog()
+    {
+
+    }
+
     private void sendRefillDeviceCredit()
     {
-        if (mListener != null) {
-            Bundle args = new Bundle();
 
-            String refillCode = refillCodeTextView.getText().toString();
-            args.putString("refillCode", refillCode);
-
-            mListener.onFragmentActionPerform(AdminAction.RECHARGE_DEVICE_ACCOUNT, args);
-        }
     }
 
     @Override
@@ -133,20 +131,28 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
 
     @Override
     public void handleResult(boolean result, AdminData adminData, AdminAction action) {
+        switch (action) {
+            case RECHARGE_DEVICE_ACCOUNT:
+                break;
+            case GET_DEVICE_ACCOUNT:
+                handleReceivedGetDeviceAccount(result, adminData);
+                break;
+            default:
+                Log.i("MatDienApp", "The result was transfer to the wrong fragment");
+        }
+    }
+
+    private void handleReceivedGetDeviceAccount(boolean result, AdminData data) {
         if (result) {
             // received a successful response
             double deviceCredit = adminData.getDeviceAccount();
             Date updateDate = adminData.getDeviceAccountUpdateDate();
 
             // display it to the users
-            deviceCreditTextView.setText("50000d");
+            deviceCreditTextView.setText(String.valueOf(deviceCredit));
             updatedDateTextView.setText(updateDate.toString());
-
-            if (action == AdminAction.RECHARGE_DEVICE_ACCOUNT)
-                refillCodeTextView.setText("");
-
         } else {
-            // TODO: Doing something to inform the users
+            Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
         }
     }
 
