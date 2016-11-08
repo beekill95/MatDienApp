@@ -97,7 +97,7 @@ public class Protocol
     public String changeAdminPasswordMessage(String username, String oldPass, String newPass) {
         JSONObject message = new JSONObject();
         try {
-            message.accumulate(ProtocolString.USER_FIELD_STRING, "admin");
+            message.accumulate(ProtocolString.USER_FIELD_STRING, username);
             message.accumulate(ProtocolString.PASS_FIELD_STRING, oldPass);
             message.accumulate(ProtocolString.NEWPASS_FIELD_STRING, newPass);
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.CHANGE_PASS_ACTION_STRING);
