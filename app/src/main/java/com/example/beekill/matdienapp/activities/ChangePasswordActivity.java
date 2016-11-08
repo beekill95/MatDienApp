@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.example.beekill.matdienapp.R;
 
 public class ChangePasswordActivity extends AppCompatActivity {
-    private EditText oldPassEditText;
+    private Spinner userSpinner;
+    private EditText adminPassEditText;
     private EditText newPassEditText;
     private EditText passRetypeEditText;
 
@@ -21,10 +23,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
-        oldPassEditText = (EditText) findViewById(R.id.oldPassEditText);
+        userSpinner = (Spinner) findViewById(R.id.userSpinner);
+        adminPassEditText = (EditText) findViewById(R.id.adminPassEditText);
         newPassEditText = (EditText) findViewById(R.id.newPassEditText);
         passRetypeEditText = (EditText) findViewById(R.id.retypeNewPassEditText);
-
 
         Button changePassButton = (Button) findViewById(R.id.changePassButton);
         changePassButton.setOnClickListener(
@@ -39,18 +41,23 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
     private void onChangePasswordButtonClicked()
     {
-        String oldPass = oldPassEditText.getText().toString();
+        String user = userSpinner.getSelectedItem().toString();
+        String adminPass = adminPassEditText.getText().toString();
         final String newPass = newPassEditText.getText().toString();
         String retypePass = passRetypeEditText.getText().toString();
 
-        boolean isUserInputOk = checkUserInput(oldPass, newPass, retypePass);
+        boolean isUserInputOk = checkUserInput(adminPass, newPass, retypePass);
 
         if (isUserInputOk) {
             // every thing is ok
             Intent resultIntent = getIntent();
-            resultIntent.putExtra("oldPass", oldPass);
-            resultIntent.putExtra("newPass", newPass);
+            Bundle args = new Bundle();
 
+            args.putString("user", user);
+            args.putString("adminPass", adminPass);
+            args.putString("newPass", newPass);
+
+            resultIntent.putExtra("args", args);
             setResult(RESULT_OK, resultIntent);
             finish();
         } else {
@@ -62,7 +69,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // delete all
-                                    oldPassEditText.getText().clear();
+                                    adminPassEditText.getText().clear();
                                     newPassEditText.getText().clear();
                                     passRetypeEditText.getText().clear();
                                 }
@@ -75,7 +82,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
     {
         boolean hasNoEmptyEditTexts = checkHasNoEmptyEditTexts(oldPass, newPass, retypePass);
         boolean isNewPasswordOK = checkIsNewPasswordOK(newPass, retypePass);
-        // TODO: should we check whether the old pass is correct
 
         return hasNoEmptyEditTexts && isNewPasswordOK;
     }

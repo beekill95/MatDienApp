@@ -25,6 +25,7 @@ import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
+import com.example.beekill.matdienapp.hash.Hashing;
 import com.example.beekill.matdienapp.helper.ObjectSerializerHelper;
 import com.example.beekill.matdienapp.protocol.AdminProtocol;
 import com.example.beekill.matdienapp.protocol.Response;
@@ -191,12 +192,7 @@ public class AdminActionActivity extends AppCompatActivity
         if (requestCode == CHANGE_PASSWORD_REQUEST) {
             // only process successful request
             if (resultCode == RESULT_OK) {
-                String oldPass = data.getStringExtra("oldPass");
-                String newPass = data.getStringExtra("newPass");
-
-                Bundle args = new Bundle();
-                args.putString("oldPass", oldPass);
-                args.putString("newPass", newPass);
+                Bundle args = data.getBundleExtra("args");
 
                 sendChangePasswordMessage(args);
             }
@@ -409,8 +405,17 @@ public class AdminActionActivity extends AppCompatActivity
 
     private void sendChangePasswordMessage(Bundle args)
     {
-        // TODO: change to using md5
-        // TODO: using the given password
+        String user = args.getString("user");
+        String adminPass = args.getString("adminPass");
+        String newPass = args.getString("newPass");
+
+        Hashing hash = ((MatDienApplication) getApplication()).getHashing();
+        String adminPassHashed = hash.hash(adminPass, "");
+        String newPassHashed = hash.hash(newPass, "");
+
+        String message = adminProtocol.changeAdminPasswordMessage(user, adminPass, newPass);
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.CHANGE_PASSWORD, args)));
     }
 
     private void sendListSubscriberMessage(Bundle args)
