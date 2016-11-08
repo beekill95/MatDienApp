@@ -540,6 +540,22 @@ public class AdminActionActivity extends AppCompatActivity
         phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.GET_DEVICE_ACCOUNT);
     }
 
+    private void handleReceivedRechargeDeviceAccount(String message, Bundle args)
+    {
+        // get the message
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // update admin data
+            String accountCreditString = response.getDescription();
+            double accountCredit = Double.parseDouble(accountCreditString);
+
+            adminData.setDeviceAccount(accountCredit);
+        }
+
+        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.RECHARGE_DEVICE_ACCOUNT);
+    }
+
     private void handleReceiveListSubscriber(String message, Bundle args)
     {
         // get the message
@@ -558,18 +574,6 @@ public class AdminActionActivity extends AppCompatActivity
         }
 
         subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.LIST_SUBSCRIBER);
-    }
-
-    private void handleReceivedRechargeDeviceAccount(String message, Bundle args)
-    {
-        // get the message
-        Response response = adminProtocol.getResponse(message);
-
-        if (response.getResult()) {
-            // TODO: how to handle the result??
-        }
-
-        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.RECHARGE_DEVICE_ACCOUNT);
     }
 
     private void handleReceiveChangePassword(String message, Bundle args)

@@ -1,6 +1,8 @@
 package com.example.beekill.matdienapp.activities.admin;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -8,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -104,12 +107,35 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
 
     private void showRefillAccountDialog()
     {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View dialog = layoutInflater.inflate(R.layout.dialog_refill_account, null);
 
+        final EditText refillSequenceEditText = (EditText) dialog.findViewById(R.id.refillSequenceEditText);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        dialogBuilder.setView(dialog);
+
+        dialogBuilder
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String refillSequence = refillSequenceEditText.getText().toString();
+                        sendRefillDeviceCredit(refillSequence);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null);
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
     }
 
-    private void sendRefillDeviceCredit()
+    private void sendRefillDeviceCredit(String refillSequence)
     {
-
+        if (mListener != null) {
+            Bundle args = new Bundle();
+            args.putString("refillCode", refillSequence);
+            mListener.onFragmentActionPerform(AdminAction.RECHARGE_DEVICE_ACCOUNT, args);
+        }
     }
 
     @Override
@@ -133,6 +159,7 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
     public void handleResult(boolean result, AdminData adminData, AdminAction action) {
         switch (action) {
             case RECHARGE_DEVICE_ACCOUNT:
+                handleReceivedRechargedDevice(result, adminData);
                 break;
             case GET_DEVICE_ACCOUNT:
                 handleReceivedGetDeviceAccount(result, adminData);
@@ -142,18 +169,30 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
         }
     }
 
-    private void handleReceivedGetDeviceAccount(boolean result, AdminData data) {
+    private void handleReceivedRechargedDevice(boolean result, AdminData data) {
         if (result) {
-            // received a successful response
-            double deviceCredit = adminData.getDeviceAccount();
-            Date updateDate = adminData.getDeviceAccountUpdateDate();
-
-            // display it to the users
-            deviceCreditTextView.setText(String.valueOf(deviceCredit));
-            updatedDateTextView.setText(updateDate.toString());
+            displayDeviceAccount(data);
         } else {
             Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void handleReceivedGetDeviceAccount(boolean result, AdminData data) {
+        if (result) {
+            displayDeviceAccount(data);
+        } else {
+            Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void displayDeviceAccount(AdminData data) {
+        // received a successful response
+        double deviceCredit = adminData.getDeviceAccount();
+        Date updateDate = adminData.getDeviceAccountUpdateDate();
+
+        // display it to the users
+        deviceCreditTextView.setText(String.valueOf(deviceCredit));
+        updatedDateTextView.setText(updateDate.toString());
     }
 
     @Override
