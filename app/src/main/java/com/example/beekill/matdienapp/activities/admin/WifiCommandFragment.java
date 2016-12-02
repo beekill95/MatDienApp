@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.example.beekill.matdienapp.R;
 
@@ -24,11 +26,8 @@ public class WifiCommandFragment extends Fragment implements AdminFragmentCommon
 
     private OnListFragmentInteractionListener mListener;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public WifiCommandFragment() {
+
     }
 
     public static WifiCommandFragment newInstance() {
@@ -46,8 +45,13 @@ public class WifiCommandFragment extends Fragment implements AdminFragmentCommon
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wificommand, container, false);
 
-        // Set the adapter
-
+        ListView wifiCommandsListView = (ListView) view.findViewById(R.id.wifiCommandsListView);
+        wifiCommandsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                onItemClicked(i);
+            }
+        });
 
         return view;
     }
@@ -86,5 +90,32 @@ public class WifiCommandFragment extends Fragment implements AdminFragmentCommon
 
     public interface OnListFragmentInteractionListener {
         void onFragmentActionPerform(AdminAction action, Bundle args);
+    }
+
+    private void onItemClicked(int index) {
+        final int WIFI_INQUIRY_IDX = 0;
+        final int WIFI_CONN_IDX = 1;
+
+        switch (index) {
+            case WIFI_INQUIRY_IDX:
+                onWifiInquiryOptionSelected();
+            case WIFI_CONN_IDX:
+                onWifiConnectionOptionSelected();
+        }
+    }
+
+    private void onWifiInquiryOptionSelected() {
+        if (mListener != null) {
+            mListener.onFragmentActionPerform(AdminAction.WIFI_AP_INQUIRY, null);
+        }
+    }
+
+    private void onWifiConnectionOptionSelected() {
+        // display a dialog for users to input access point and password
+
+
+        if (mListener != null) {
+
+        }
     }
 }

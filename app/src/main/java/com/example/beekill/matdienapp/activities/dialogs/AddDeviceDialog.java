@@ -1,4 +1,4 @@
-package com.example.beekill.matdienapp.activities;
+package com.example.beekill.matdienapp.activities.dialogs;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

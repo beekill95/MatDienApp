@@ -55,7 +55,7 @@
             android:value="barcode" />
 
         <activity
-            android:name=".activities.AddDeviceDialog"
+            android:name=".activities.dialogs.AddDeviceDialog"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity

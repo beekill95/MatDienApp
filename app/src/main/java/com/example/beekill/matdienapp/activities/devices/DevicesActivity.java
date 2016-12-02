@@ -14,7 +14,7 @@ import com.example.beekill.matdienapp.DeviceInformation;
 import com.example.beekill.matdienapp.RecognizedDevices;
 import com.example.beekill.matdienapp.activities.LogInActivity;
 import com.example.beekill.matdienapp.R;
-import com.example.beekill.matdienapp.activities.AddDeviceDialog;
+import com.example.beekill.matdienapp.activities.dialogs.AddDeviceDialog;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 public class DevicesActivity extends AppCompatActivity {
 
