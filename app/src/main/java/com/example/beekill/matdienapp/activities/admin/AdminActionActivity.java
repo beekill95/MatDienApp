@@ -36,6 +36,7 @@ import java.util.List;
 public class AdminActionActivity extends AppCompatActivity
     implements SubscriberFragment.OnFragmentInteractionListener,
         PhoneAccountFragment.OnFragmentInteractionListener,
+        WifiCommandFragment.OnListFragmentInteractionListener,
         CommunicationManager.ResultReceivedHandler,
         BluetoothCommunication.BluetoothStatusHandler
 {
@@ -54,6 +55,7 @@ public class AdminActionActivity extends AppCompatActivity
     //private String deviceAddress;
     private AdminFragmentCommonInterface subscriberFragmentHandler;
     private AdminFragmentCommonInterface phoneAccountFragmentHandler;
+    private AdminFragmentCommonInterface wifiCommandFragmentHandler;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -325,13 +327,17 @@ public class AdminActionActivity extends AppCompatActivity
                 phoneAccountFragment.displayData(adminData);
 
                 return phoneAccountFragment;
+            } else if (position == 2) {
+                WifiCommandFragment wifiCommandFragment = WifiCommandFragment.newInstance();
+                wifiCommandFragmentHandler = wifiCommandFragment;
+                return wifiCommandFragment;
             } else
                 return null;
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -341,6 +347,8 @@ public class AdminActionActivity extends AppCompatActivity
                     return "Subscriber";
                 case 1:
                     return "Device Account";
+                case 2:
+                    return "Wifi Command";
             }
             return null;
         }

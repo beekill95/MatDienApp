@@ -22,4 +22,9 @@
     <string name="phone_number">Phone number</string>
     <string name="title_activity_subscriber_action">SubscriberActionActivity</string>
     <string name="update_status">Update Status</string>
+
+    <string-array name="wifi_commands">
+        <item>Wifi Ap Inquiry</item>
+        <item>Wifi Connection</item>
+    </string-array>
 </resources>
