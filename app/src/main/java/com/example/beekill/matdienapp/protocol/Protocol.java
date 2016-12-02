@@ -3,6 +3,9 @@ import android.bluetooth.BluetoothClass;
 
 import org.json.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by beekill on 8/8/16.
  */
@@ -24,6 +27,9 @@ public class Protocol
         public  static final String PHONE_NUMBER_FIELD_STRING = "phone";
         public static final String RECHARGE_CREDIT_CODE_FIELD_STRING = "code";
         public static final String STATUS_VALUE_FIELD_STRING = "val";
+        public static final String AP_FIELD_STRING = "AP";
+        public static final String AP_PASS_FIELD_STRING = "PassAp";
+        public static final String AP_LIST_AVAILABLE_FIELD_STRING = "ListAp";
 
         public static final String RESULT_FIELD_STRING = "result";
         public static final String DESCRIPTION_FIELD_STRING = "desc";
@@ -42,6 +48,8 @@ public class Protocol
         public static final String REFILL_PHONE_ACCOUNT_ACTION_STRING = "RefillPhoneAcc";
         public static final String UPDATE_STATUS_ACTION_STRING = "Update";
         public static final String SESSION_INITIATION_ACTION_STRING = "SessionInitiation";
+        public static final String WIFI_INQUIRY_ACTION_STRING = "WifiInquiry";
+        public static final String WIFI_CONNECTION_ACTION_STRING = "WifiConnect";
 
         public static final String SUBSCRIBE_ACTION_STRING = "Subscribe";
         public static final String UNSUBSCRIBE_ACTION_STRING = "Unsubscribe";
@@ -216,8 +224,9 @@ public class Protocol
                 else
                     response.setResult(false);
 
-                // get description
-                response.setDescription(message.getString(ProtocolString.DESCRIPTION_FIELD_STRING));
+                // get description if available
+                if (message.has(ProtocolString.DESCRIPTION_FIELD_STRING))
+                    response.setDescription(message.getString(ProtocolString.DESCRIPTION_FIELD_STRING));
 
                 // get list, if any
                 if (message.has(ProtocolString.LIST_FIELD_STRING)) {
@@ -228,6 +237,25 @@ public class Protocol
                         subscriberPhoneNumbers[i] = subscribers.getString(i);
 
                     response.setList(subscriberPhoneNumbers);
+                }
+
+                // get status if available
+                if (message.has(ProtocolString.STATUS_FIELD_STRING))
+                    response.setStatus(message.getString(ProtocolString.STATUS_FIELD_STRING));
+
+                // get current connect ap if available
+                if (message.has(ProtocolString.AP_FIELD_STRING))
+                    response.setCurrentAccessPoint(message.getString(ProtocolString.AP_FIELD_STRING));
+
+                // get list available ap if available
+                if (message.has(ProtocolString.AP_LIST_AVAILABLE_FIELD_STRING)) {
+                    JSONArray availableAps = message.getJSONArray(ProtocolString.AP_LIST_AVAILABLE_FIELD_STRING);
+
+                    List<String> availAps = new ArrayList<>();
+                    for (int i = 0; i < availableAps.length(); ++i)
+                        availAps.add(availableAps.getString(i));
+
+                    response.setAvailableAccessPoints(availAps);
                 }
             }
         } catch(JSONException e) {
@@ -329,5 +357,32 @@ public class Protocol
         } finally {
             return success;
         }
+    }
+
+    @Override
+    public String getAccessPointInquiryMessage() {
+        JSONObject message = new JSONObject();
+
+        try {
+            message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.WIFI_INQUIRY_ACTION_STRING);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return message.toString();
+    }
+
+    @Override
+    public String getWifiConnectionMessage(String accessPoint, String password) {
+        JSONObject message = new JSONObject();
+        try {
+            message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.WIFI_CONNECTION_ACTION_STRING);
+            message.accumulate(ProtocolString.AP_FIELD_STRING, accessPoint);
+            message.accumulate(ProtocolString.AP_PASS_FIELD_STRING, password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return message.toString();
     }
 }

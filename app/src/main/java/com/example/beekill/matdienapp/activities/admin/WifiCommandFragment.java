@@ -1,6 +1,7 @@
 package com.example.beekill.matdienapp.activities.admin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.beekill.matdienapp.R;
+import com.example.beekill.matdienapp.activities.dialogs.WifiConnectionInputDialog;
 
 import java.util.List;
 
@@ -110,12 +112,26 @@ public class WifiCommandFragment extends Fragment implements AdminFragmentCommon
         }
     }
 
+    private static final int REQUEST_ACCESS_POINT_INPUT = 777;
+
     private void onWifiConnectionOptionSelected() {
         // display a dialog for users to input access point and password
+        Intent inputAccessPointIntent = new Intent(getActivity(), WifiConnectionInputDialog.class);
+        startActivityForResult(inputAccessPointIntent, REQUEST_ACCESS_POINT_INPUT, null);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ACCESS_POINT_INPUT && resultCode == 1/*RESULT_OK*/) {
+            String accessPoint = data.getStringExtra(WifiConnectionInputDialog.ACCESS_POINT);
+            String apPassword = data.getStringExtra(WifiConnectionInputDialog.PASSWORD);
 
-        if (mListener != null) {
+            Bundle args = new Bundle();
+            args.putString("accessPoint", accessPoint);
+            args.putString("password", apPassword);
 
+            if (mListener != null)
+                mListener.onFragmentActionPerform(AdminAction.WIFI_CONNECTION, args);
         }
     }
 }
