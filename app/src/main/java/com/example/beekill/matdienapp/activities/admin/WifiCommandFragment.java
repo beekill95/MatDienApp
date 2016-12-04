@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +12,7 @@ import android.widget.ListView;
 
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.dialogs.WifiConnectionInputDialog;
-
-import java.util.List;
+import com.example.beekill.matdienapp.protocol.Response;
 
 /**
  * A fragment representing a list of Items.
@@ -77,12 +73,14 @@ public class WifiCommandFragment extends Fragment implements AdminFragmentCommon
     }
 
     @Override
-    public void handleResult(boolean result, AdminData adminData, AdminAction action) {
+    public void handleResult(Response response, AdminData adminData, AdminAction action) {
         if (action == AdminAction.WIFI_AP_INQUIRY) {
-
-        } else if (action == AdminAction.WIFI_CONNECTION) {
-
+            // show the result in admin activity
         }
+
+        // if we receive wifi connection result
+        // we do nothing
+        // because admin activity already show the result
     }
 
     @Override

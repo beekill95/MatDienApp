@@ -9,22 +9,18 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
-import com.example.beekill.matdienapp.hash.Hashing;
+import com.example.beekill.matdienapp.protocol.Response;
 import com.example.beekill.matdienapp.protocol.SubscriptionType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -269,8 +265,8 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
     }
 
     @Override
-    public void handleResult(boolean result, AdminData adminData, AdminAction adminAction) {
-        if (result) {
+    public void handleResult(Response response, AdminData adminData, AdminAction adminAction) {
+        if (response.getResult()) {
             displaySubscriberList(adminData);
         }
     }

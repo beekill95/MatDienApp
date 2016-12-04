@@ -24,6 +24,7 @@
     <string name="update_status">Update Status</string>
     <string name="access_point">Access Point</string>
     <string name="password">Password</string>
+    <string name="status">Status:</string>
 
     <string-array name="wifi_commands">
         <item>Wifi Ap Inquiry</item>

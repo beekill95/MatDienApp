@@ -251,7 +251,7 @@ public class Protocol
                 if (message.has(ProtocolString.AP_LIST_AVAILABLE_FIELD_STRING)) {
                     JSONArray availableAps = message.getJSONArray(ProtocolString.AP_LIST_AVAILABLE_FIELD_STRING);
 
-                    List<String> availAps = new ArrayList<>();
+                    ArrayList<String> availAps = new ArrayList<>();
                     for (int i = 0; i < availableAps.length(); ++i)
                         availAps.add(availableAps.getString(i));
 
@@ -360,7 +360,7 @@ public class Protocol
     }
 
     @Override
-    public String getAccessPointInquiryMessage() {
+    public String getWifiAccessPointInquiryMessage() {
         JSONObject message = new JSONObject();
 
         try {

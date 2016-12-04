@@ -22,6 +22,8 @@ import com.example.beekill.matdienapp.activities.LogInActivity;
 import com.example.beekill.matdienapp.MatDienApplication;
 import com.example.beekill.matdienapp.R;
 import com.example.beekill.matdienapp.activities.ChangePasswordActivity;
+import com.example.beekill.matdienapp.activities.dialogs.WifiAccessPointInquiryDialog;
+import com.example.beekill.matdienapp.activities.dialogs.WifiConnectionInputDialog;
 import com.example.beekill.matdienapp.communication.BluetoothCommunication;
 import com.example.beekill.matdienapp.communication.CommunicationManager;
 import com.example.beekill.matdienapp.communication.QueueManager;
@@ -372,9 +374,31 @@ public class AdminActionActivity extends AppCompatActivity
             case LIST_SUBSCRIBER:
                 sendListSubscriberMessage(args);
                 break;
+            case WIFI_AP_INQUIRY:
+                sendWifiAccessPointInquiry(args);
+                break;
+            case WIFI_CONNECTION:
+                sendWifiConnection(args);
+                break;
             default:
                 break;
         }
+    }
+
+    private void sendWifiAccessPointInquiry(Bundle args) {
+        String message = adminProtocol.getWifiAccessPointInquiryMessage();
+
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.WIFI_AP_INQUIRY, args)));
+    }
+
+    private void sendWifiConnection(Bundle args) {
+        String accessPoint = args.getString("accessPoint");
+        String password = args.getString("password");
+
+        String message = adminProtocol.getWifiConnectionMessage(accessPoint, password);
+        int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
+        pendingActions.add(Pair.create(messageId, Pair.create(AdminAction.WIFI_CONNECTION, args)));
     }
 
     private void sendAddSubscriberMessage(Bundle args)
@@ -469,6 +493,11 @@ public class AdminActionActivity extends AppCompatActivity
             case GET_DEVICE_ACCOUNT:
                 handleReceivedDeviceAccount(message, actionPair.second.second);
                 break;
+            case WIFI_AP_INQUIRY:
+                handleReceivedWifiAccessPointInquiry(message, actionPair.second.second);
+                break;
+            case WIFI_CONNECTION:
+                handleReceivedWifiConnection(message, actionPair.second.second);
             case RECHARGE_DEVICE_ACCOUNT:
                 handleReceivedRechargeDeviceAccount(message, actionPair.second.second);
                 break;
@@ -479,6 +508,29 @@ public class AdminActionActivity extends AppCompatActivity
 
         // remove the pair
         pendingActions.remove(actionPair);
+    }
+
+    private void handleReceivedWifiAccessPointInquiry(String message, Bundle args) {
+        Response response = adminProtocol.getResponse(message);
+
+        if (response.getResult()) {
+            // success
+            Intent displayWifiAccessPointIntent = new Intent(this, WifiAccessPointInquiryDialog.class);
+            displayWifiAccessPointIntent.putExtra("status", response.getStatus());
+            displayWifiAccessPointIntent.putExtra("accessPoint", response.getCurrentAccessPoint());
+            displayWifiAccessPointIntent.putStringArrayListExtra("availableAccessPoints", response.getAvailableAccessPoints());
+            startActivity(displayWifiAccessPointIntent);
+        } else
+            Toast.makeText(this, response.getDescription(), Toast.LENGTH_SHORT).show();
+
+        wifiCommandFragmentHandler.handleResult(response, null, AdminAction.WIFI_AP_INQUIRY);
+    }
+
+    private void handleReceivedWifiConnection(String message, Bundle args) {
+        Response response = adminProtocol.getResponse(message);
+
+        Toast.makeText(this, response.getDescription(), Toast.LENGTH_SHORT).show();
+        wifiCommandFragmentHandler.handleResult(response, null, AdminAction.WIFI_CONNECTION);
     }
 
     private void handleReceivedRemoveSubscriber(String message, Bundle args) {
@@ -503,7 +555,7 @@ public class AdminActionActivity extends AppCompatActivity
         }
 
         Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
-        subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.DEL_SUBSCRIBER);
+        subscriberFragmentHandler.handleResult(response, adminData, AdminAction.DEL_SUBSCRIBER);
     }
 
     private void handleReceivedAddSubscriber(String message, Bundle args)
@@ -529,7 +581,7 @@ public class AdminActionActivity extends AppCompatActivity
         }
 
         Toast.makeText(this, response.getDescription(), Toast.LENGTH_LONG).show();
-        subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.ADD_SUBSCRIBER);
+        subscriberFragmentHandler.handleResult(response, adminData, AdminAction.ADD_SUBSCRIBER);
     }
 
     private void handleReceivedDeviceAccount(String message, Bundle args)
@@ -545,7 +597,7 @@ public class AdminActionActivity extends AppCompatActivity
             adminData.setDeviceAccount(accountCredit);
         }
 
-        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.GET_DEVICE_ACCOUNT);
+        phoneAccountFragmentHandler.handleResult(response, adminData, AdminAction.GET_DEVICE_ACCOUNT);
     }
 
     private void handleReceiveListSubscriber(String message, Bundle args)
@@ -565,7 +617,7 @@ public class AdminActionActivity extends AppCompatActivity
                 adminData.setThiefSubscribers(subscriberList);
         }
 
-        subscriberFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.LIST_SUBSCRIBER);
+        subscriberFragmentHandler.handleResult(response, adminData, AdminAction.LIST_SUBSCRIBER);
     }
 
     private void handleReceivedRechargeDeviceAccount(String message, Bundle args)
@@ -577,7 +629,7 @@ public class AdminActionActivity extends AppCompatActivity
             // TODO: how to handle the result??
         }
 
-        phoneAccountFragmentHandler.handleResult(response.getResult(), adminData, AdminAction.RECHARGE_DEVICE_ACCOUNT);
+        phoneAccountFragmentHandler.handleResult(response, adminData, AdminAction.RECHARGE_DEVICE_ACCOUNT);
     }
 
     private void handleReceiveChangePassword(String message, Bundle args)

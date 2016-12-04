@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.beekill.matdienapp.R;
+import com.example.beekill.matdienapp.protocol.Response;
 
 import java.util.Date;
 
@@ -132,8 +133,8 @@ public class PhoneAccountFragment extends Fragment implements AdminFragmentCommo
     }
 
     @Override
-    public void handleResult(boolean result, AdminData adminData, AdminAction action) {
-        if (result) {
+    public void handleResult(Response response, AdminData adminData, AdminAction action) {
+        if (response.getResult()) {
             // received a successful response
             double deviceCredit = adminData.getDeviceAccount();
             Date updateDate = adminData.getDeviceAccountUpdateDate();

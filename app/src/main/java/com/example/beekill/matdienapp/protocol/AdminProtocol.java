@@ -13,6 +13,6 @@ public interface AdminProtocol extends ResponseProtocol {
     String rechargeAccountCreditMessage(String creditCardId);
     String sessionInitialization(String user, String password);
 
-    String getAccessPointInquiryMessage();
+    String getWifiAccessPointInquiryMessage();
     String getWifiConnectionMessage(String accessPoint, String password);
 }

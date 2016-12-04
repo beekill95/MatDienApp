@@ -59,6 +59,14 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
         <activity
+            android:name=".activities.dialogs.WifiAccessPointInquiryDialog"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".activities.dialogs.WifiConnectionInputDialog"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
             android:name=".activities.subscriber.SubscriberActionActivity"
             android:label="@string/title_activity_subscriber_action"
             android:theme="@style/AppTheme.NoActionBar"></activity>

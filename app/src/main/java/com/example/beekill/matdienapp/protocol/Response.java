@@ -1,5 +1,6 @@
 package com.example.beekill.matdienapp.protocol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,11 +47,11 @@ public class Response {
         this.currentAccessPoint = currentAccessPoint;
     }
 
-    public List<String> getAvailableAccessPoints() {
+    public ArrayList<String> getAvailableAccessPoints() {
         return availableAccessPoints;
     }
 
-    public void setAvailableAccessPoints(List<String> availableAccessPoints) {
+    public void setAvailableAccessPoints(ArrayList<String> availableAccessPoints) {
         this.availableAccessPoints = availableAccessPoints;
     }
 
@@ -61,5 +62,5 @@ public class Response {
     // for wifi inquiry (not use description)
     private String status;
     private String currentAccessPoint;
-    private List<String> availableAccessPoints;
+    private ArrayList<String> availableAccessPoints;
 }
