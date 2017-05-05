@@ -48,7 +48,7 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
     private StatusSubscriberExpandableAdapter listAdapter;
     private ExpandableListView listView;
     private final String[] statuses = {
-            SubscriptionType.Power.getValue(), SubscriptionType.Camera.getValue(), SubscriptionType.Thief.getValue()
+            SubscriptionType.Power.getValue()/*, SubscriptionType.Camera.getValue(), SubscriptionType.Thief.getValue()*/
     };
     private HashMap<String, String[]> subscribersInStatus;
 
@@ -292,12 +292,12 @@ public class SubscriberFragment extends Fragment implements AdminFragmentCommonI
     private void getDataToDisplay(AdminData adminData) {
         if (adminData == null) {
             subscribersInStatus.put(statuses[0], null);
-            subscribersInStatus.put(statuses[1], null);
-            subscribersInStatus.put(statuses[2], null);
+//            subscribersInStatus.put(statuses[1], null);
+//            subscribersInStatus.put(statuses[2], null);
         } else {
             subscribersInStatus.put(statuses[0], adminData.getPowerSubscribers());
-            subscribersInStatus.put(statuses[1], adminData.getCameraSubscribers());
-            subscribersInStatus.put(statuses[2], adminData.getThiefSubscribers());
+//            subscribersInStatus.put(statuses[1], adminData.getCameraSubscribers());
+//            subscribersInStatus.put(statuses[2], adminData.getThiefSubscribers());
         }
     }
 }

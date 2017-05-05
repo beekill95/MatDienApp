@@ -190,7 +190,11 @@ public class DevicesActivity extends AppCompatActivity {
             // no file found
             devices = new RecognizedDevices();
             devices.addNewDevice("something cool", "12345");
-        } catch (IOException e) { }
-        catch (ClassNotFoundException e) { }
+        } catch (IOException e) {
+            devices = new RecognizedDevices();
+        }
+        catch (ClassNotFoundException e) {
+            devices = new RecognizedDevices();
+        }
     }
 }

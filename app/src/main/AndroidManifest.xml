@@ -4,6 +4,7 @@
 
     <uses-sdk android:minSdkVersion="13" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -32,6 +33,24 @@
 
         <service android:name=".MatDienService" />
 
+        <service
+            android:name=".firebase.MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".firebase.MyFirebaseInstanceIdService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".communication.TextSMSCommunication$TextSMSReceiverHandler"
             android:enabled="true">
@@ -49,6 +68,15 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.ChangePasswordActivity" />
         <activity android:name=".activities.qrreader.QRActivity" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@android:drawable/ic_notification_overlay" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
 
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"

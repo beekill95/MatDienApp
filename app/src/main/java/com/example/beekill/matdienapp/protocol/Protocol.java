@@ -1,10 +1,8 @@
 package com.example.beekill.matdienapp.protocol;
-import android.bluetooth.BluetoothClass;
 
 import org.json.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by beekill on 8/8/16.
@@ -190,16 +188,21 @@ public class Protocol
             JSONObject message = new JSONObject(notificationMessage);
 
             if (message.getString(ProtocolString.ACTION_FIELD_STRING).equals("Noti")) {
-                boolean value = message.getBoolean("val");
 
                 String status = message.getString("status");
+                if (status.equals("Temp")) {
+                    double value = message.getDouble("val");
+                    notification = new Notification(false, false, false, value);
+                } else {
+                    boolean value = message.getBoolean("val");
 
-                if (status.equals("Power"))
-                    notification = new Notification(value, false, false);
-                else if (status.equals("Camera"))
-                    notification = new Notification(false, value, false);
-                else
-                    notification = new Notification(false, false, value);
+                    if (status.equals("Power"))
+                        notification = new Notification(value, false, false, -1);
+                    else if (status.equals("Camera"))
+                        notification = new Notification(false, value, false, -1);
+                    else
+                        notification = new Notification(false, false, value, -1);
+                }
             }
         } catch(JSONException e) {
             e.printStackTrace();
@@ -281,12 +284,13 @@ public class Protocol
     }
 
     @Override
-    public String addSubscription(String subscriptionType, String phoneNumber) {
+    public String addSubscription(String subscriptionType, String phoneNumber, String fcmToken) {
         JSONObject message = new JSONObject();
         try {
             message.accumulate(ProtocolString.STATUS_FIELD_STRING, subscriptionType);
             message.accumulate(ProtocolString.ACTION_FIELD_STRING, ProtocolString.SUBSCRIBE_ACTION_STRING);
             message.accumulate(ProtocolString.PHONE_NUMBER_FIELD_STRING, phoneNumber);
+            message.accumulate("token", fcmToken);
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {
@@ -351,7 +355,7 @@ public class Protocol
             JSONObject noti = response.getJSONObject(ProtocolString.STATUS_VALUE_FIELD_STRING);
             notification.setCameraOn(noti.getBoolean(SubscriptionType.Camera.getValue()));
             notification.setPowerOn(noti.getBoolean(SubscriptionType.Power.getValue()));
-            notification.setHaveTheif(noti.getBoolean(SubscriptionType.Thief.getValue()));
+            notification.setHaveThief(noti.getBoolean(SubscriptionType.Thief.getValue()));
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {

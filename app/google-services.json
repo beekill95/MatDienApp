@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "692350934498",
+    "firebase_url": "https://psdu-26918.firebaseio.com",
+    "project_id": "psdu-26918",
+    "storage_bucket": "psdu-26918.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:692350934498:android:3871f7690b95567a",
+        "android_client_info": {
+          "package_name": "com.example.beekill.matdienapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "692350934498-m540drfl7hc9h80bveh334i68drld2rv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbvsbq8eCIa8WIcs8B8kXos-ApgSxJIeg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

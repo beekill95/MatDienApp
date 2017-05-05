@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
@@ -58,6 +59,9 @@ public class SubscriberActionActivity extends AppCompatActivity
 
     // subscriber protocol
     private SubscriberProtocol protocol;
+
+    // fcm token
+    private String fcmToken;
 
     // subscriber data
     private ArrayList<String> statusSubscribed;
@@ -126,6 +130,10 @@ public class SubscriberActionActivity extends AppCompatActivity
                     }
                 }
         );
+
+        // get fcm token
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        fcmToken = sharedPreferences.getString("fcmToken", "");
     }
 
     @Override
@@ -261,7 +269,7 @@ public class SubscriberActionActivity extends AppCompatActivity
 
     private void sendSubscribeCommand(String status, String thisPhoneNumber) {
         this.thisPhoneNumber = thisPhoneNumber;
-        String message = protocol.addSubscription(status, thisPhoneNumber);
+        String message = protocol.addSubscription(status, thisPhoneNumber, fcmToken);
 
         int messageId = queueManager.enqueueMessageToSend(message, deviceBluetoothAddress);
         pendingActions.add(Pair.create(messageId, Pair.create(SubscriberAction.SUBSCRIBE, status)));
@@ -315,7 +323,7 @@ public class SubscriberActionActivity extends AppCompatActivity
             stringBuilder.append("\n" + SubscriptionType.Camera.getValue() + ": ");
             stringBuilder.append(notification.isCameraOn());
             stringBuilder.append("\n" + SubscriptionType.Thief.getValue() + ": ");
-            stringBuilder.append(notification.isHaveTheif());
+            stringBuilder.append(notification.isHaveThief());
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder

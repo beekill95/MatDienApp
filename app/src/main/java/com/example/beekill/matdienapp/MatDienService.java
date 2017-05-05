@@ -46,7 +46,7 @@ public class MatDienService extends IntentService {
         String devicePhoneNumber = sharedPreferences.getString("devicePhoneNumber", null);
 
         // only process those messages sent from device phone number
-        if (isKnownDevices(devicePhoneNumber)) {
+        if (isKnownDevices(devicePhoneNumber) || isKnownDevices(fromAddress)) {
             Log.i("MatDienApp", "Service received message " + message + " from device address " + fromAddress);
 
             // get notification from the message
@@ -63,7 +63,11 @@ public class MatDienService extends IntentService {
                 startNotificationActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startNotificationActivityIntent.putExtra("notification", notification);
                 startActivity(startNotificationActivityIntent);
+            } else {
+                Log.d("MatDienApp", "Unknown handle protocol here");
             }
+        } else {
+            Log.d("MatDienApp", "Unknown phone number");
         }
     }
 

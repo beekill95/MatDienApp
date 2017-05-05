@@ -52,7 +52,10 @@ public class NotificationActivity extends AppCompatActivity {
         builder.append(notification.isCameraOn());
 
         builder.append("\nWe are being robbed: ");
-        builder.append(notification.isHaveTheif());
+        builder.append(notification.isHaveThief());
+
+        builder.append("\nTemperature is: ");
+        builder.append(String.valueOf(notification.getTemperature()));
 
         notificationTextView.setText(builder.toString());
     }

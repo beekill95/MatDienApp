@@ -7,21 +7,25 @@ import android.os.Parcelable;
  * Created by beekill on 8/23/16.
  */
 public class Notification implements Parcelable {
+
     private boolean powerOn;
     private boolean cameraOn;
-    private boolean haveTheif;
+    private boolean haveThief;
+    private double temperature;
 
     public Notification() {
         powerOn = false;
         cameraOn = false;
-        haveTheif = false;
+        haveThief = false;
+        temperature = -1;
     }
 
-    public Notification(boolean powerOn, boolean cameraOn, boolean haveTheif)
+    public Notification(boolean powerOn, boolean cameraOn, boolean haveThief, double temperature)
     {
         this.powerOn = powerOn;
-        this.haveTheif = haveTheif;
+        this.haveThief = haveThief;
         this.cameraOn = cameraOn;
+        this.temperature = temperature;
     }
 
     public boolean isPowerOn() {
@@ -32,8 +36,12 @@ public class Notification implements Parcelable {
         return cameraOn;
     }
 
-    public boolean isHaveTheif() {
-        return haveTheif;
+    public boolean isHaveThief() {
+        return haveThief;
+    }
+
+    public double getTemperature() {
+        return temperature;
     }
 
     private Notification(Parcel in) {
@@ -42,7 +50,8 @@ public class Notification implements Parcelable {
 
         powerOn = values[0];
         cameraOn = values[1];
-        haveTheif = values[2];
+        haveThief = values[2];
+        temperature = in.readDouble();
     }
 
     public void setPowerOn(boolean powerOn) {
@@ -53,8 +62,12 @@ public class Notification implements Parcelable {
         this.cameraOn = cameraOn;
     }
 
-    public void setHaveTheif(boolean haveTheif) {
-        this.haveTheif = haveTheif;
+    public void setHaveThief(boolean haveTheif) {
+        this.haveThief = haveTheif;
+    }
+
+    public void setTemperature(double temperature) {
+        this.temperature = temperature;
     }
 
     @Override
@@ -64,8 +77,9 @@ public class Notification implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int i) {
-        boolean values[] = {powerOn, cameraOn, haveTheif};
+        boolean values[] = {powerOn, cameraOn, haveThief};
         out.writeBooleanArray(values);
+        out.writeDouble(temperature);
     }
 
     public static final Parcelable.Creator<Notification> CREATOR

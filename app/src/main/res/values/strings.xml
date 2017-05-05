@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MatDienApp</string>
+    <string name="app_name">PSDU</string>
     <string name="sign_in">Sign In</string>
     <string name="log_in">Log In</string>
     <string name="sign_out">Sign Out</string>
