@@ -240,10 +240,11 @@ public class SubscriberActionActivity extends AppCompatActivity
 
         // add items to spinner
         List<String> list = new ArrayList<>();
-        list.add(SubscriptionType.Camera.getValue());
+//        list.add(SubscriptionType.Camera.getValue());
         list.add(SubscriptionType.Power.getValue());
-        list.add(SubscriptionType.Thief.getValue());
-        list.add(SubscriptionType.All.getValue());
+        list.add(SubscriptionType.Temp.getValue());
+//        list.add(SubscriptionType.Thief.getValue());
+//        list.add(SubscriptionType.All.getValue());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
